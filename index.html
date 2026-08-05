@@ -186,13 +186,14 @@
                     <span class="font-black text-amber-800 text-xs sm:text-sm" id="user-stars">0 Sao</span>
                 </div>
             </div>
+			<button id="btn-pwa-install" onclick="installPWA()" class="hidden px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 text-sm">
+			  <i class="fa-solid fa-download"></i> Cài Đặt Ứng Dụng
+			</button>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto w-full p-3 sm:p-4 flex-grow flex flex-col justify-center">
-			<button id="btn-pwa-install" onclick="installPWA()" class="hidden px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 text-sm">
-			  <i class="fa-solid fa-download"></i> Cài Đặt Ứng Dụng
-			</button>
+
         <!-- MÀN HÌNH 1: Màn hình chính / Chọn Khối Lớp & Chủ Đề -->
         <section id="screen-home" class="space-y-5 py-2">
             <!-- Banner chào mừng -->
@@ -298,16 +299,15 @@
                         <div id="quiz-progress-bar" class="bg-blue-500 h-full transition-all duration-300 w-1/5"></div>
                     </div>
                 </div>
-
-<div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-    <button onclick="toggleScratchpad()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-extrabold px-2.5 py-1 rounded-lg border border-amber-300 text-xs transition flex items-center gap-1">
-        <i class="fa-solid fa-pen-nib"></i> Nháp
-    </button>
-    <div class="text-amber-600 font-bold flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 text-xs">
-        <i class="fa-solid fa-clock"></i>
-        <span id="quiz-timer">00:00</span>
-    </div>
-</div>
+				<div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+					<button onclick="toggleScratchpad()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-extrabold px-2.5 py-1 rounded-lg border border-amber-300 text-xs transition flex items-center gap-1">
+						<i class="fa-solid fa-pen-nib"></i> Nháp
+					</button>
+					<div class="text-amber-600 font-bold flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 text-xs">
+						<i class="fa-solid fa-clock"></i>
+						<span id="quiz-timer">00:00</span>
+					</div>
+				</div>
             </div>
 
             <!-- Khung Bảng Nháp Điện Tử Nâng Cấp -->
@@ -1040,35 +1040,60 @@ let scratchCtx = null;
         const QUESTION_GENERATORS = {
             // --- LỚP 3 ---
             g3_numbers: [
-                () => {
-                    const thousands = getRandomInt(10, 89) * 1000;
-                    const randDigit = getRandomInt(1, 9) * 100;
-                    const num = thousands + randDigit + getRandomInt(12, 89);
-                    const roundedThousand = Math.round(num / 1000) * 1000;
-                    return makeQ(
-                        `Làm tròn số $${num.toLocaleString('vi-VN')}$ đến hàng nghìn ta được số nào?`,
-                        `${roundedThousand.toLocaleString('vi-VN')}`,
-                        [
-                            () => `${(Math.floor(num / 1000) * 1000).toLocaleString('vi-VN')}`,
-                            () => `${(Math.ceil(num / 1000) * 1000 + 1000).toLocaleString('vi-VN')}`,
-                            () => `${(thousands).toLocaleString('vi-VN')}`
-                        ],
-                        `<p class="font-bold text-blue-700">Bài giải (Làm tròn số):</p><p>Chữ số hàng trăm của $${num.toLocaleString('vi-VN')}$ là <b>${Math.floor((num % 1000) / 100)}</b>.</p><p>Vì ${Math.floor((num % 1000) / 100)} ${Math.floor((num % 1000) / 100) >= 5 ? '$\\ge 5$' : '$< 5$'} nên ta làm tròn ${Math.floor((num % 1000) / 100) >= 5 ? 'lên' : 'xuống'}: <b>${roundedThousand.toLocaleString('vi-VN')}</b>.</p><p><b>Đáp số:</b> ${roundedThousand.toLocaleString('vi-VN')}</p>`
-                    );
-                },
-                () => {
-                    const a = getRandomInt(12000, 45000);
-                    const b = a + getRandomInt(100, 500);
-                    return makeQ(
-                        `So sánh hai số: $${a.toLocaleString('vi-VN')}$ và $${b.toLocaleString('vi-VN')}$`,
-                        `$${a.toLocaleString('vi-VN')} < ${b.toLocaleString('vi-VN')}$`,
-                        [
-                            () => `$${a.toLocaleString('vi-VN')} > ${b.toLocaleString('vi-VN')}$`,
-                            () => `$${a.toLocaleString('vi-VN')} = ${b.toLocaleString('vi-VN')}$`
-                        ],
-                        `<p class="font-bold text-blue-700">Bài giải:</p><p>Hai số đều có 5 chữ số. So sánh từ hàng chục nghìn đến hàng đơn vị, ta thấy $${a.toLocaleString('vi-VN')} < ${b.toLocaleString('vi-VN')}$.</p>`
-                    );
-                }
+					() => {
+						const num = getRandomInt(10, 89) * 1000 + getRandomInt(1, 9) * 100 + getRandomInt(12, 89);
+						
+						const floorVal = Math.floor(num / 1000) * 1000; // Làm tròn xuống
+						const ceilVal = floorVal + 1000;                // Làm tròn lên
+						const roundedThousand = Math.round(num / 1000) * 1000; // Đáp án đúng
+						
+						// Tạo phương án nhiễu thực tế, không bị trùng lặp:
+						// 1. Làm tròn ngược chiều đúng
+						const distractor1 = roundedThousand === floorVal ? ceilVal : floorVal; 
+						// 2. Làm tròn "quá tay" thêm 1.000
+						const distractor2 = roundedThousand === floorVal ? floorVal - 1000 : ceilVal + 1000; 
+						// 3. Bẫy làm tròn nhầm sang hàng trăm
+						const distractor3 = Math.round(num / 100) * 100; 
+
+						const hundredDigit = Math.floor((num % 1000) / 100);
+
+						return makeQ(
+							`Làm tròn số $${num.toLocaleString('vi-VN')}$ đến hàng nghìn ta được số nào?`,
+							`${roundedThousand.toLocaleString('vi-VN')}`,
+							[
+								() => `${distractor1.toLocaleString('vi-VN')}`,
+								() => `${distractor2.toLocaleString('vi-VN')}`,
+								() => `${distractor3.toLocaleString('vi-VN')}`
+							],
+							`<p class="font-bold text-blue-700">Bài giải (Làm tròn số):</p>` +
+							`<p>Chữ số hàng trăm của $${num.toLocaleString('vi-VN')}$ là <b>${hundredDigit}</b>.</p>` +
+							`<p>Vì ${hundredDigit} ${hundredDigit >= 5 ? '$\\ge 5$' : '$< 5$'} nên ta làm tròn ${hundredDigit >= 5 ? 'lên' : 'xuống'}: <b>${roundedThousand.toLocaleString('vi-VN')}</b>.</p>` +
+							`<p><b>Đáp số:</b> ${roundedThousand.toLocaleString('vi-VN')}</p>`
+						);
+					},
+				() => {
+					// 1. Sinh số ngẫu nhiên từ 4 đến 5 chữ số (1.000 đến 95.000)
+					const is5Digits = getRandomInt(0, 1) === 1;
+					const a = is5Digits ? getRandomInt(10000, 95000) : getRandomInt(1000, 9000);
+					const b = a + getRandomInt(100, 500);
+
+					const aStr = a.toLocaleString('vi-VN');
+					const bStr = b.toLocaleString('vi-VN');
+					
+					const numDigits = a.toString().length;
+					const startRank = numDigits === 5 ? 'hàng chục nghìn' : 'hàng nghìn';
+
+					return makeQ(
+						`Điền dấu thích hợp vào chỗ chấm: $${aStr} \\dots ${bStr}$`,
+						`<`,
+						[
+							() => `>`,
+							() => `=`,
+							() => `Không có dấu thích hợp`
+						],
+						`<p class="font-bold text-blue-700">Bài giải:</p><p>Hai số đều có ${numDigits} chữ số. So sánh từ ${startRank} đến hàng đơn vị, ta thấy $${aStr} < ${bStr}$.</p><p><b>Đáp số:</b> $</p>`
+					);
+				}
             ],
             g3_multi_div: [
                 () => {
@@ -1126,7 +1151,11 @@ let scratchCtx = null;
 					return makeQ(
 						`Tìm $x$, biết: ${a} - x = ${c}`,
 						`x = ${xVal}`,
-						[() => `x = ${a} + ${c}`, () => `x = ${xVal + 10}`, () => `x = ${xVal - 10}`],
+						[
+							() => `x = ${a + c}`,     // Đã sửa: Tính ra kết quả (VD: x = 109) thay vì chuỗi 61 + 48
+							() => `x = ${xVal + 10}`, // Bẫy tính sai
+							() => `x = ${xVal - 10}`  // Bẫy tính sai
+						],
 						`<p class="font-bold text-blue-700">Bài giải (Tìm số trừ):</p><p>Muốn tìm số trừ, ta lấy số bị trừ trừ đi hiệu.</p><p>• $x = ${a} - ${c} = ${xVal}$</p><p><b>Đáp số:</b> $x = ${xVal}$</p>`
 					);
 				},
@@ -1580,145 +1609,825 @@ let scratchCtx = null;
 				}
             ],
             g3_more_less: [
-                () => {
-                    const classA = getRandomInt(18, 35), diff = getRandomInt(5, 12), classB = classA + diff, total = classA + classB;
-                    return makeQ(
-                        `Lớp 3A trồng được $${classA}$ cây. Lớp 3B trồng được <b>nhiều hơn</b> lớp 3A $${diff}$ cây. Hỏi cả hai lớp trồng được tất cả bao nhiêu cây?`,
-                        `${total} cây`,
-                        [() => `${classB} cây`, () => `${total - diff} cây`, () => `${classA * 2} cây`],
-                        `<p class="font-bold text-blue-700">Bài giải (Bài toán giải bằng 2 bước tính - Khái niệm "Nhiều hơn"):</p><p><b>Bước 1:</b> Số cây lớp 3B trồng được là:<br>&emsp;$${classA} + ${diff} = ${classB}$ (cây)</p><p><b>Bước 2:</b> Cả hai lớp trồng được tất cả số cây là:<br>&emsp;$${classA} + ${classB} = ${total}$ (cây)</p><p><b>Đáp số:</b> $${total}$ cây.</p>`
-                    );
-                },
-                () => {
-                    const morning = getRandomInt(35, 60), diff = getRandomInt(8, 20), afternoon = morning - diff, total = morning + afternoon;
-                    return makeQ(
-                        `Cửa hàng buổi sáng bán được $${morning}$ kg đường. Buổi chiều bán được <b>ít hơn</b> buổi sáng $${diff}$ kg đường. Hỏi cả hai buổi cửa hàng bán được bao nhiêu ki-lô-gam đường?`,
-                        `${total} kg`,
-                        [() => `${afternoon} kg`, () => `${total + diff} kg`, () => `${morning * 2} kg`],
-                        `<p class="font-bold text-blue-700">Bài giải (Bài toán giải bằng 2 bước tính - Khái niệm "Ít hơn"):</p><p><b>Bước 1:</b> Buổi chiều cửa hàng bán được số ki-lô-gam đường là:<br>&emsp;$${morning} - ${diff} = ${afternoon}$ (kg)</p><p><b>Bước 2:</b> Cả hai buổi cửa hàng bán được tất cả số ki-lô-gam đường là:<br>&emsp;$${morning} + ${afternoon} = ${total}$ (kg)</p><p><b>Đáp số:</b> $${total}$ kg.</p>`
-                    );
-                },
-                () => {
-                    const hung = getRandomInt(6, 12), times = getRandomInt(3, 5), dung = hung * times, total = hung + dung;
-                    return makeQ(
-                        `Bạn Hùng có $${hung}$ viên bi. Bạn Dũng có số bi <b>gấp $${times}$ lần</b> số bi của Hùng. Hỏi cả hai bạn có tất cả bao nhiêu viên bi?`,
-                        `${total} viên bi`,
-                        [() => `${dung} viên bi`, () => `${hung + times} viên bi`, () => `${total + hung} viên bi`],
-                        `<p class="font-bold text-blue-700">Bài giải (Bài toán giải bằng 2 bước tính - "Gấp lên một số lần"):</p><p><b>Bước 1:</b> Bạn Dũng có số viên bi là:<br>&emsp;$${hung} \\times ${times} = ${dung}$ (viên bi)</p><p><b>Bước 2:</b> Cả hai bạn có tất cả số viên bi là:<br>&emsp;$${hung} + ${dung} = ${total}$ (viên bi)</p><p><b>Đáp số:</b> $${total}$ viên bi.</p>`
-                    );
-                },
-                () => {
-                    const divisor = getRandomInt(3, 5), lowerShelf = getRandomInt(4, 9), upperShelf = lowerShelf * divisor, total = upperShelf + lowerShelf;
-                    return makeQ(
-                        `Ngăn trên có $${upperShelf}$ quyển sách. Số sách ở ngăn dưới <b>giảm đi $${divisor}$ lần</b> so với ngăn trên. Hỏi cả hai ngăn có bao nhiêu quyển sách?`,
-                        `${total} quyển sách`,
-                        [() => `${lowerShelf} quyển sách`, () => `${upperShelf - divisor} quyển sách`, () => `${total + divisor} quyển sách`],
-                        `<p class="font-bold text-blue-700">Bài giải (Bài toán giải bằng 2 bước tính - "Giảm đi một số lần"):</p><p><b>Bước 1:</b> Ngăn dưới có số quyển sách là:<br>&emsp;$${upperShelf} : ${divisor} = ${lowerShelf}$ (quyển sách)</p><p><b>Bước 2:</b> Cả hai ngăn có tất cả số quyển sách là:<br>&emsp;$${upperShelf} + ${lowerShelf} = ${total}$ (quyển sách)</p><p><b>Đáp số:</b> $${total}$ quyển sách.</p>`
-                    );
-                },
-                () => {
-                    const tankA = getRandomInt(12, 28), extra = getRandomInt(5, 15), tankB = tankA + extra, total = tankA + tankB;
-                    return makeQ(
-                        `Quan sát sơ đồ tóm tắt sau:<br><div class="bg-slate-50 p-3 rounded-xl my-2 text-xs font-mono border border-slate-200">Thùng 1: |----------| ($${tankA}\\text{ lít}$)<br>Thùng 2: |----------|-----| (nhiều hơn $${extra}\\text{ lít}$)<br>Cả 2 thùng: $?\\text{ lít}$</div>Số thích hợp để điền vào dấu hỏi chấm ($?$) là:`,
-                        `${total} lít`,
-                        [() => `${tankB} lít`, () => `${total - extra} lít`, () => `${tankA * 2} lít`],
-                        `<p class="font-bold text-blue-700">Bài giải (Điền số vào sơ đồ đoạn thẳng):</p><p><b>Bước 1:</b> Dựa vào sơ đồ, số lít dầu ở thùng 2 là:<br>&emsp;$${tankA} + ${extra} = ${tankB}$ (lít)</p><p><b>Bước 2:</b> Tổng số lít dầu ở cả hai thùng là:<br>&emsp;$${tankA} + ${tankB} = ${total}$ (lít)</p><p><b>Đáp số:</b> Điền $${total}$ lít vào dấu $?$.</p>`
-                    );
-                },
-                () => {
-                    const startNum = getRandomInt(5, 12), mult = getRandomInt(3, 5), step1 = startNum * mult, minus = getRandomInt(4, 10), finalAns = step1 - minus;
-                    return makeQ(
-                        `Điền số thích hợp vào ô $[ \\text{?} ]$ trong sơ đồ quy trình sau:<br><div class="bg-amber-50 p-3 rounded-xl my-2 text-center font-bold text-sm border border-amber-200 text-amber-900">$[ ${startNum} ] \\xrightarrow{\\text{Gấp lên } ${mult} \\text{ lần}} [ \\text{A} ] \\xrightarrow{\\text{Giảm đi } ${minus} \\text{ đơn vị}} [ \\text{?} ]$</div>`,
-                        `${finalAns}`,
-                        [() => `${step1}`, () => `${finalAns + minus * 2}`, () => `${startNum * mult - 1}`],
-                        `<p class="font-bold text-blue-700">Bài giải (Điền số vào sơ đồ quy trình):</p><p><b>Bước 1:</b> Tìm giá trị ô $[ \\text{A} ]$ (Gấp lên $${mult}$ lần):<br>&emsp;$${startNum} \\times ${mult} = ${step1}$</p><p><b>Bước 2:</b> Tìm giá trị ô $[ \\text{?} ]$ (Giảm đi $${minus}$ đơn vị từ ô A):<br>&emsp;$${step1} - ${minus} = ${finalAns}$</p><p><b>Đáp số:</b> $${finalAns}$.</p>`
-                    );
-                },
+					() => {
+					// 1. NGỮ CẢNH ĐA DẠNG
+					const contexts = [
+						{
+							intro: 'Cửa hàng',
+							sub1: 'Buổi sáng',
+							sub2: 'Buổi chiều',
+							svg1: 'Buổi sáng:',
+							svg2: 'Buổi chiều:',
+							item: 'kg cam',
+							unit: 'kg',
+							verb: 'bán được',
+							totalTarget: 'cả hai buổi cửa hàng bán được'
+						},
+						{
+							intro: 'Cửa hàng lương thực',
+							sub1: 'Ngày thứ nhất',
+							sub2: 'Ngày thứ hai',
+							svg1: 'Ngày 1:',
+							svg2: 'Ngày 2:',
+							item: 'kg gạo',
+							unit: 'kg',
+							verb: 'bán được',
+							totalTarget: 'cả hai ngày cửa hàng bán được'
+						},
+						{
+							intro: 'Trong phong trào Kế hoạch nhỏ',
+							sub1: 'Lớp 3A',
+							sub2: 'Lớp 3B',
+							svg1: 'Lớp 3A:',
+							svg2: 'Lớp 3B:',
+							item: 'kg giấy vụn',
+							unit: 'kg',
+							verb: 'thu gom được',
+							totalTarget: 'cả hai lớp thu gom được'
+						},
+						{
+							intro: 'Hưởng ứng Tết trồng cây',
+							sub1: 'Khối lớp 3',
+							sub2: 'Khối lớp 4',
+							svg1: 'Khối 3:',
+							svg2: 'Khối 4:',
+							item: 'cây xanh',
+							unit: 'cây',
+							verb: 'trồng được',
+							totalTarget: 'cả hai khối trồng được'
+						},
+						{
+							intro: 'Trong kho',
+							sub1: 'Thùng thứ nhất',
+							sub2: 'Thùng thứ hai',
+							svg1: 'Thùng 1:',
+							svg2: 'Thùng 2:',
+							item: 'lít dầu',
+							unit: 'lít',
+							verb: 'chứa',
+							totalTarget: 'cả hai thùng chứa'
+						}
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					// 2. NGẪU NHIÊN DẠNG TOÁN: true -> Nhiều hơn | false -> Ít hơn
+					const isMore = getRandomInt(0, 1) === 1;
+					const compareWord = isMore ? 'nhiều hơn' : 'ít hơn';
+
+					// 3. SINH DỮ LIỆU SỐ
+					const val1 = getRandomInt(35, 60);
+					const diff = getRandomInt(8, 20);
+					const val2 = isMore ? (val1 + diff) : (val1 - diff);
+					const total = val1 + val2;
+
+					// 4. VẼ SƠ ĐỒ ĐA MÀU SẮC TRỰC QUAN (Có khung Card & Màu sắc nổi bật)
+					const topEndX = isMore ? 190 : 255;
+					const bottomEndX = isMore ? 255 : 190;
+
+					const diffSvg = isMore 
+						? `<line x1="190" y1="30" x2="255" y2="30" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,3"/><line x1="255" y1="20" x2="255" y2="40" stroke="#ef4444" stroke-width="2.5"/><text x="222" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">${diff} ${ctx.unit}</text>`
+						: `<line x1="190" y1="70" x2="255" y2="70" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,3"/><line x1="255" y1="60" x2="255" y2="80" stroke="#ef4444" stroke-width="2.5"/><text x="222" y="62" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">${diff} ${ctx.unit}</text>`;
+
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="340" height="110" viewBox="0 0 340 110" style="display:block;max-width:100%;height:auto;"><text x="10" y="34" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="74" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="30" x2="${topEndX}" y2="30" stroke="#2563eb" stroke-width="3.5"/><line x1="85" y1="20" x2="85" y2="40" stroke="#2563eb" stroke-width="2.5"/><line x1="${topEndX}" y1="20" x2="${topEndX}" y2="40" stroke="#2563eb" stroke-width="2.5"/><text x="${(85 + topEndX) / 2}" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${val1} ${ctx.unit}</text><line x1="85" y1="70" x2="${bottomEndX}" y2="70" stroke="#16a34a" stroke-width="3.5"/><line x1="85" y1="60" x2="85" y2="80" stroke="#16a34a" stroke-width="2.5"/><line x1="${bottomEndX}" y1="60" x2="${bottomEndX}" y2="80" stroke="#16a34a" stroke-width="2.5"/><text x="${(85 + bottomEndX) / 2}" y="${isMore ? 92 : 62}" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${diffSvg}<path d="M 268,30 C 278,30 278,50 283,50 C 278,50 278,70 268,70" fill="none" stroke="#64748b" stroke-width="2.5"/><text x="292" y="54" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text></svg></div></div>`;
+
+					// 5. NỘI DUNG ĐỀ BÀI VÀ BÀI GIẢI
+					const questionText = `<div><p>${ctx.intro}, ${ctx.sub1} ${ctx.verb} $${val1}$ ${ctx.item}. ${ctx.sub2} ${ctx.verb} <b>${compareWord}</b> ${ctx.sub1} $${diff}$ ${ctx.item} theo sơ đồ sau:</p>` +
+						diagramHtml +
+						`<p>Hỏi ${ctx.totalTarget} bao nhiêu ${ctx.item}?</p></div>`;
+
+					const operator = isMore ? '+' : '-';
+					const oppositeTotal = isMore ? (val1 + (val1 - diff)) : (val1 + (val1 + diff));
+
+					const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Dạng toán "${compareWord.charAt(0).toUpperCase() + compareWord.slice(1)}"):</p>` +
+						`<p><b>Bước 1:</b> ${ctx.sub2} ${ctx.verb} số ${ctx.item} là:<br>&emsp;$${val1} ${operator} ${diff} = ${val2}$ (${ctx.unit})</p>` +
+						`<p><b>Bước 2:</b> ${ctx.totalTarget.charAt(0).toUpperCase() + ctx.totalTarget.slice(1)} tất cả số ${ctx.item} là:<br>&emsp;$${val1} + ${val2} = ${total}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> $${total}$ ${ctx.unit}.</p>`;
+
+					return makeQ(
+						questionText,
+						`${total} ${ctx.unit}`,
+						[
+							() => `${val2} ${ctx.unit}`,
+							() => `${oppositeTotal} ${ctx.unit}`,
+							() => `${val1 * 2} ${ctx.unit}`
+						],
+						explainHtml
+					);
+				},
 				() => {
-                    const x = getRandomInt(3, 6);
-                    const k = getRandomInt(4, 10);
-                    const valA = x * k;
-                    const valB = k;
-                    const total = valA + valB;
-                    const askTotal = getRandomInt(0, 1) === 1;
+					// 1. NGỮ CẢNH ĐA DẠNG
+					const contexts = [
+						{
+							sub1: 'Bạn Hùng',
+							sub2: 'Bạn Dũng',
+							svg1: 'Hùng:',
+							svg2: 'Dũng:',
+							item: 'viên bi',
+							unit: 'viên bi',
+							verb: 'có',
+							totalTarget: 'cả hai bạn có tất cả'
+						},
+						{
+							sub1: 'Khối lớp 3',
+							sub2: 'Khối lớp 4',
+							svg1: 'Khối 3:',
+							svg2: 'Khối 4:',
+							item: 'cây',
+							unit: 'cây',
+							verb: 'trồng được',
+							totalTarget: 'cả hai khối trồng được tất cả'
+						},
+						{
+							sub1: 'Thùng thứ nhất',
+							sub2: 'Thùng thứ hai',
+							svg1: 'Thùng 1:',
+							svg2: 'Thùng 2:',
+							unit: 'lít',
+							unitFull: 'lít dầu',
+							verb: 'chứa',
+							totalTarget: 'cả hai thùng chứa tất cả'
+						},
+						{
+							sub1: 'Bạn An',
+							sub2: 'Bạn Bình',
+							svg1: 'An:',
+							svg2: 'Bình:',
+							item: 'quyển sách',
+							unit: 'quyển',
+							verb: 'đọc được',
+							totalTarget: 'cả hai bạn đọc được tất cả'
+						},
+						{
+							sub1: 'Cuộn dây thứ nhất',
+							sub2: 'Cuộn dây thứ hai',
+							svg1: 'Cuộn 1:',
+							svg2: 'Cuộn 2:',
+							unit: 'm',
+							unitFull: 'mét dây',
+							verb: 'dài',
+							totalTarget: 'cả hai cuộn dây dài tất cả'
+						}
+					];
 
-                    if (askTotal) {
-                        return makeQ(
-                            `Thùng A chứa $${valA}$ lít dầu. Thùng B chứa số dầu bằng $\\frac{1}{${x}}$ số dầu của thùng A. Hỏi cả hai thùng có tất cả bao nhiêu lít dầu?`,
-                            `${total} lít`,
-                            [() => `${valB} lít`, () => `${valA + x} lít`, () => `${valA * 2} lít`],
-                            `<p class="font-bold text-blue-700">Bài giải (Tìm một trong các phần bằng nhau & Tính tổng):</p><p><b>Bước 1:</b> Thùng B chứa số lít dầu là:<br>&emsp;$${valA} : ${x} = ${valB}$ (lít)</p><p><b>Bước 2:</b> Cả hai thùng chứa tất cả số lít dầu là:<br>&emsp;$${valA} + ${valB} = ${total}$ (lít)</p><p><b>Đáp số:</b> $${total}$ lít.</p>`
-                        );
-                    } else {
-                        return makeQ(
-                            `Cuộn dây thứ nhất dài $${valA}$ m. Cuộn dây thứ hai dài bằng $\\frac{1}{${x}}$ cuộn dây thứ nhất. Hỏi cuộn dây thứ hai dài bao nhiêu mét?`,
-                            `${valB} m`,
-                            [() => `${valA - x} m`, () => `${valA * x} m`, () => `${total} m`],
-                            `<p class="font-bold text-blue-700">Bài giải (Tìm một trong các phần bằng nhau của một số):</p><p>Muốn tìm $\\frac{1}{${x}}$ của $${valA}$ m, ta lấy $${valA}$ chia cho $${x}$:</p><p>&emsp;$${valA} : ${x} = ${valB}$ (m)</p><p><b>Đáp số:</b> $${valB}$ m.</p>`
-                        );
-                    }
-                },
-                () => {
-                    const x = getRandomInt(3, 5);
-                    const k = getRandomInt(4, 8);
-                    const valA = x * k;
-                    const fracPart = k;
-                    const valB = valA - fracPart;
-                    const total = valA + valB;
-                    const askTotal = getRandomInt(0, 1) === 1;
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
 
-                    if (askTotal) {
-                        return makeQ(
-                            `Đội I trồng được $${valA}$ cây. Đội II trồng được số cây giảm đi một lượng bằng $\\frac{1}{${x}}$ số cây của Đội I. Hỏi cả hai đội trồng được tất cả bao nhiêu cây?`,
-                            `${total} cây`,
-                            [() => `${valB} cây`, () => `${valA + fracPart} cây`, () => `${valA * 2} cây`],
-                            `<p class="font-bold text-blue-700">Bài giải (Giảm đi $\\frac{1}{${x}}$ của dữ kiện A & Tính tổng):</p><p><b>Bước 1:</b> Số cây giảm đi (bằng $\\frac{1}{${x}}$ số cây Đội I) là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (cây)</p><p><b>Bước 2:</b> Số cây Đội II trồng được là:<br>&emsp;$${valA} - ${fracPart} = ${valB}$ (cây)</p><p><b>Bước 3:</b> Cả hai đội trồng được tất cả số cây là:<br>&emsp;$${valA} + ${valB} = ${total}$ (cây)</p><p><b>Đáp số:</b> $${total}$ cây.</p>`
-                        );
-                    } else {
-                        return makeQ(
-                            `Cửa hàng A bán được $${valA}$ kg gạo. Cửa hàng B bán được ít hơn cửa hàng A một lượng bằng $\\frac{1}{${x}}$ số gạo của cửa hàng A. Hỏi cửa hàng B bán được bao nhiêu ki-lô-gam gạo?`,
-                            `${valB} kg`,
-                            [() => `${fracPart} kg`, () => `${valA - x} kg`, () => `${valA + fracPart} kg`],
-                            `<p class="font-bold text-blue-700">Bài giải (Ít hơn $\\frac{1}{${x}}$ của dữ kiện A):</p><p><b>Bước 1:</b> Số gạo cửa hàng B ít hơn cửa hàng A là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (kg)</p><p><b>Bước 2:</b> Cửa hàng B bán được số ki-lô-gam gạo là:<br>&emsp;$${valA} - ${fracPart} = ${valB}$ (kg)</p><p><b>Đáp số:</b> $${valB}$ kg.</p>`
-                        );
-                    }
-                },
-                () => {
-                    const x = getRandomInt(2, 5);
-                    const k = getRandomInt(5, 10);
-                    const valA = x * k;
-                    const fracPart = k;
-                    const valB = valA + fracPart;
-                    const total = valA + valB;
-                    const askTotal = getRandomInt(0, 1) === 1;
+					// 2. SINH DỮ LIỆU SỐ
+					const hung = getRandomInt(6, 12);
+					const times = getRandomInt(3, 5);
+					const dung = hung * times;
+					const total = hung + dung;
 
-                    if (askTotal) {
-                        return makeQ(
-                            `Trang trại A nuôi $${valA}$ con gà. Trang trại B nuôi số gà tăng thêm một lượng bằng $\\frac{1}{${x}}$ số gà của trang trại A. Hỏi cả hai trang trại nuôi tất cả bao nhiêu con gà?`,
-                            `${total} con gà`,
-                            [() => `${valB} con gà`, () => `${valA + x} con gà`, () => `${total - fracPart} con gà`],
-                            `<p class="font-bold text-blue-700">Bài giải (Tăng thêm $\\frac{1}{${x}}$ của dữ kiện A & Tính tổng):</p><p><b>Bước 1:</b> Số gà tăng thêm ở trang trại B là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (con gà)</p><p><b>Bước 2:</b> Trang trại B nuôi số con gà là:<br>&emsp;$${valA} + ${fracPart} = ${valB}$ (con gà)</p><p><b>Bước 3:</b> Cả hai trang trại nuôi tất cả số con gà là:<br>&emsp;$${valA} + ${valB} = ${total}$ (con gà)</p><p><b>Đáp số:</b> $${total}$ con gà.</p>`
-                        );
-                    } else {
-                        return makeQ(
-                            `Tháng trước công ty sản xuất được $${valA}$ sản phẩm. Tháng này sản xuất tăng thêm một lượng bằng $\\frac{1}{${x}}$ số sản phẩm của tháng trước. Hỏi tháng này công ty sản xuất được bao nhiêu sản phẩm?`,
-                            `${valB} sản phẩm`,
-                            [() => `${fracPart} sản phẩm`, () => `${valA + x} sản phẩm`, () => `${valA * 2} sản phẩm`],
-                            `<p class="font-bold text-blue-700">Bài giải (Tăng thêm $\\frac{1}{${x}}$ của dữ kiện A):</p><p><b>Bước 1:</b> Số sản phẩm tăng thêm trong tháng này là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (sản phẩm)</p><p><b>Bước 2:</b> Số sản phẩm tháng này công ty sản xuất được là:<br>&emsp;$${valA} + ${fracPart} = ${valB}$ (sản phẩm)</p><p><b>Đáp số:</b> $${valB}$ sản phẩm.</p>`
-                        );
-                    }
-                }
+					// 3. VẼ SƠ ĐỒ ĐOẠN THẲNG "GẤP LÊN N LẦN" (CÓ VẠCH NÉT ĐỨT CHIA ĐỀU N PHẦN)
+					const baseW = 180; // Độ dài đoạn lớn (Dũng)
+					const onePartW = Math.round(baseW / times); // Độ dài 1 phần (Hùng)
+					const row1EndX = Math.round(85 + onePartW);
+					const row2EndX = 85 + baseW;
+
+					// Sinh các vạch đứt nét chia đều đoạn dài đúng kiểu hình đính kèm
+					let innerTicks = '';
+					for (let i = 1; i < times; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicks += `<line x1="${tickX}" y1="67" x2="${tickX}" y2="83" stroke="#16a34a" stroke-width="2" stroke-dasharray="2 2"></line>`;
+					}
+
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="350" height="115" viewBox="0 0 350 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${row1EndX}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${row1EndX}" y1="25" x2="${row1EndX}" y2="45" stroke="#2563eb" stroke-width="2.5"></line><text x="${Math.round((85 + row1EndX) / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${hung} ${ctx.unit}</text><line x1="85" y1="75" x2="${row2EndX}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#16a34a" stroke-width="2.5"></line>${innerTicks}<text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text><path d="M 278,35 C 288,35 288,55 293,55 C 288,55 288,75 278,75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="302" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text></svg></div></div>`;
+
+					// 4. ĐỀ BÀI VÀ BÀI GIẢI
+					const itemText = ctx.unitFull || ctx.item;
+					const questionText = `<div><p>${ctx.sub1} ${ctx.verb} $${hung}$ ${itemText}. ${ctx.sub2} ${ctx.verb} số ${itemText} <b>gấp $${times}$ lần</b> số ${itemText} của ${ctx.sub1} theo sơ đồ sau:</p>` +
+						diagramHtml +
+						`<p>Hỏi ${ctx.totalTarget} bao nhiêu ${itemText}?</p></div>`;
+
+					const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Bài toán giải bằng 2 bước tính - "Gấp lên một số lần"):</p>` +
+						`<p><b>Bước 1:</b> ${ctx.sub2} ${ctx.verb} số ${itemText} là:<br>&emsp;$${hung} \\times ${times} = ${dung}$ (${ctx.unit})</p>` +
+						`<p><b>Bước 2:</b> ${ctx.totalTarget.charAt(0).toUpperCase() + ctx.totalTarget.slice(1)} là:<br>&emsp;$${hung} + ${dung} = ${total}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> $${total}$ ${ctx.unit}.</p>`;
+
+					return makeQ(
+						questionText,
+						`${total} ${ctx.unit}`,
+						[
+							() => `${dung} ${ctx.unit}`,
+							() => `${hung + times} ${ctx.unit}`,
+							() => `${total + hung} ${ctx.unit}`
+						],
+						explainHtml
+					);
+				},
+				() => {
+					// 1. NGỮ CẢNH ĐA DẠNG (VĂN PHONG TỰ NHIÊN)
+					const contexts = [
+						{
+							sub1: 'Ngăn trên',
+							sub2: 'ngăn dưới',
+							svg1: 'Ngăn trên:',
+							svg2: 'Ngăn dưới:',
+							unit: 'quyển',
+							unitFull: 'quyển sách',
+							verb: 'có',
+							totalTarget: 'cả hai ngăn có tất cả'
+						},
+						{
+							sub1: 'Thùng thứ nhất',
+							sub2: 'thùng thứ hai',
+							svg1: 'Thùng 1:',
+							svg2: 'Thùng 2:',
+							unit: 'lít',
+							unitFull: 'lít dầu',
+							verb: 'chứa',
+							totalTarget: 'cả hai thùng chứa tất cả'
+						},
+						{
+							sub1: 'Cuộn dây thứ nhất',
+							sub2: 'cuộn dây thứ hai',
+							svg1: 'Cuộn 1:',
+							svg2: 'Cuộn 2:',
+							unit: 'm',
+							unitFull: 'mét dây',
+							verb: 'dài',
+							totalTarget: 'cả hai cuộn dây dài tất cả'
+						},
+						{
+							sub1: 'Bao gạo thứ nhất',
+							sub2: 'bao gạo thứ hai',
+							svg1: 'Bao 1:',
+							svg2: 'Bao 2:',
+							unit: 'kg',
+							unitFull: 'kg gạo',
+							verb: 'cân nặng',
+							totalTarget: 'cả hai bao cân nặng tất cả'
+						},
+						{
+							sub1: 'Khối lớp 4',
+							sub2: 'khối lớp 3',
+							svg1: 'Khối 4:',
+							svg2: 'Khối 3:',
+							unit: 'kg',
+							unitFull: 'kg giấy vụn',
+							verb: 'thu gom được',
+							totalTarget: 'cả hai khối thu gom được tất cả'
+						}
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					// 2. SINH DỮ LIỆU SỐ
+					const divisor = getRandomInt(3, 5);
+					const lowerShelf = getRandomInt(4, 9);
+					const upperShelf = lowerShelf * divisor;
+					const total = upperShelf + lowerShelf;
+
+					// 3. VẼ SƠ ĐỒ SVG "GIẢM ĐI MỘT SỐ LẦN" (VẠCH ĐỨT CHIA ĐỀU TRÊN ĐOẠN LỚN)
+					const baseW = 180;
+					const onePartW = Math.round(baseW / divisor);
+					const row1EndX = 85 + baseW;
+					const row2EndX = Math.round(85 + onePartW);
+
+					let innerTicks = '';
+					for (let i = 1; i < divisor; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicks += `<line x1="${tickX}" y1="28" x2="${tickX}" y2="42" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
+					}
+
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="350" height="115" viewBox="0 0 350 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${row1EndX}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${row1EndX}" y1="25" x2="${row1EndX}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicks}<text x="${Math.round((85 + row1EndX) / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${upperShelf} ${ctx.unit}</text><line x1="85" y1="75" x2="${row2EndX}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#16a34a" stroke-width="2.5"></line><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text><path d="M 278,35 C 288,35 288,55 293,55 C 288,55 288,75 278,75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="302" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text></svg></div></div>`;
+
+					// 4. ĐỀ BÀI VÀ BÀI GIẢI
+					const questionText = `<div><p>${ctx.sub1} ${ctx.verb} $${upperShelf}$ ${ctx.unitFull}. Số ${ctx.unitFull} ở ${ctx.sub2} <b>giảm đi $${divisor}$ lần</b> so với ${ctx.sub1} theo sơ đồ sau:</p>` +
+						diagramHtml +
+						`<p>Hỏi ${ctx.totalTarget} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+					const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Bài toán giải bằng 2 bước tính - "Giảm đi một số lần"):</p>` +
+						`<p><b>Bước 1:</b> ${ctx.sub2.charAt(0).toUpperCase() + ctx.sub2.slice(1)} ${ctx.verb} số ${ctx.unitFull} là:<br>&emsp;$${upperShelf} : ${divisor} = ${lowerShelf}$ (${ctx.unit})</p>` +
+						`<p><b>Bước 2:</b> ${ctx.totalTarget.charAt(0).toUpperCase() + ctx.totalTarget.slice(1)} là:<br>&emsp;$${upperShelf} + ${lowerShelf} = ${total}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> $${total}$ ${ctx.unit}.</p>`;
+
+					return makeQ(
+						questionText,
+						`${total} ${ctx.unit}`,
+						[
+							() => `${lowerShelf} ${ctx.unit}`,
+							() => `${upperShelf - divisor} ${ctx.unit}`,
+							() => `${total + divisor} ${ctx.unit}`
+						],
+						explainHtml
+					);
+				},
+				() => {
+					// 1. SINH DỮ LIỆU SỐ
+					const startNum = getRandomInt(5, 12);
+					const mult = getRandomInt(3, 5);
+					const step1 = startNum * mult;
+					const minus = getRandomInt(4, 10);
+					const finalAns = step1 - minus;
+
+					// 2. VẼ SƠ ĐỒ QUY TRÌNH SVG (THẺ ĐÓNG ĐẦY ĐỦ, NÉN 1 DÒNG CHỐNG LỖI HTML)
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="420" height="90" viewBox="0 0 420 90" style="display:block;max-width:100%;height:auto;"><rect x="15" y="22" width="60" height="46" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"></rect><text x="45" y="50" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e40af">${startNum}</text><line x1="80" y1="45" x2="170" y2="45" stroke="#64748b" stroke-width="2.5"></line><path d="M 162,39 L 172,45 L 162,51 Z" fill="#64748b"></path><text x="125" y="32" text-anchor="middle" font-size="11" font-weight="bold" fill="#d97706">Gấp lên ${mult} lần</text><rect x="175" y="22" width="60" height="46" rx="10" fill="#f3e8ff" stroke="#a855f7" stroke-width="2"></rect><text x="205" y="50" text-anchor="middle" font-size="15" font-weight="bold" fill="#6b21a8">A</text><line x1="240" y1="45" x2="330" y2="45" stroke="#64748b" stroke-width="2.5"></line><path d="M 322,39 L 332,45 L 322,51 Z" fill="#64748b"></path><text x="285" y="32" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">Giảm ${minus} đơn vị</text><rect x="335" y="22" width="60" height="46" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2.5"></rect><text x="365" y="51" text-anchor="middle" font-size="18" font-weight="bold" fill="#b91c1c">?</text></svg></div></div>`;
+
+					// 3. ĐỀ BÀI VÀ BÀI GIẢI
+					const questionText = `<div><p>Điền số thích hợp vào ô <b>[ ? ]</b> trong sơ đồ quy trình sau:</p>` +
+						diagramHtml + `</div>`;
+
+					const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Điền số vào sơ đồ quy trình):</p>` +
+						`<p><b>Bước 1:</b> Tìm giá trị ô <b>[ A ]</b> (Gấp lên $${mult}$ lần):<br>&emsp;$${startNum} \\times ${mult} = ${step1}$</p>` +
+						`<p><b>Bước 2:</b> Tìm giá trị ô <b>[ ? ]</b> (Giảm đi $${minus}$ đơn vị từ ô A):<br>&emsp;$${step1} - ${minus} = ${finalAns}$</p>` +
+						`<p><b>Đáp số:</b> $${finalAns}$.</p>`;
+
+					return makeQ(
+						questionText,
+						`${finalAns}`,
+						[
+							() => `${step1}`,
+							() => `${finalAns + minus * 2}`,
+							() => `${startNum * mult - 1}`
+						],
+						explainHtml
+					);
+				},
+				() => {
+					// 1. NGỮ CẢNH ĐA DẠNG (ĐÃ TINH CHỈNH VĂN PHONG TỰ NHIÊN)
+					const contexts = [
+						{
+							intro: 'Một cửa hàng có',
+							sub1: 'cuộn dây thứ nhất',
+							sub2: 'cuộn dây thứ hai',
+							svg1: 'Cuộn 1:',
+							svg2: 'Cuộn 2:',
+							unit: 'm',
+							unitFull: 'mét',
+							verb: 'dài',
+							totalTarget: 'cả hai cuộn dây dài tất cả'
+						},
+						{
+							intro: 'Trong kho,',
+							sub1: 'thùng thứ nhất',
+							sub2: 'thùng thứ hai',
+							svg1: 'Thùng 1:',
+							svg2: 'Thùng 2:',
+							unit: 'lít',
+							unitFull: 'lít dầu',
+							verb: 'chứa',
+							totalTarget: 'cả hai thùng chứa tất cả'
+						},
+						{
+							intro: 'Trong phong trào Kế hoạch nhỏ,',
+							sub1: 'lớp 3A',
+							sub2: 'lớp 3B',
+							svg1: 'Lớp 3A:',
+							svg2: 'Lớp 3B:',
+							unit: 'kg',
+							unitFull: 'kg giấy vụn',
+							verb: 'thu gom được',
+							totalTarget: 'cả hai lớp thu gom được tất cả'
+						},
+						{
+							intro: 'Ở một cửa hàng lương thực,',
+							sub1: 'bao gạo thứ nhất',
+							sub2: 'bao gạo thứ hai',
+							svg1: 'Bao 1:',
+							svg2: 'Bao 2:',
+							unit: 'kg',
+							unitFull: 'kg gạo',
+							verb: 'cân nặng',
+							totalTarget: 'cả hai bao cân nặng tất cả'
+						},
+						{
+							intro: 'Trang trại có',
+							sub1: 'trang trại A',
+							sub2: 'trang trại B',
+							svg1: 'Trại A:',
+							svg2: 'Trại B:',
+							unit: 'con',
+							unitFull: 'con gà',
+							verb: 'nuôi được',
+							totalTarget: 'cả hai trang trại nuôi tất cả'
+						}
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					// 2. SINH DỮ LIỆU SỐ
+					const x = getRandomInt(3, 6);
+					const k = getRandomInt(4, 10);
+					const valA = x * k;
+					const valB = k;
+					const total = valA + valB;
+					const askTotal = getRandomInt(0, 1) === 1;
+
+					// 3. VẼ SƠ ĐỒ ĐOẠN THẲNG SVG (SỬ DỤNG THẺ ĐÓNG ĐẦY ĐỦ ĐỂ TRÁNH LỖI MẤT HÌNH)
+					const onePartW = 180 / x;
+					const row2EndX = Math.round(85 + onePartW);
+
+					let innerTicksA = '';
+					for (let i = 1; i < x; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicksA += `<line x1="${tickX}" y1="28" x2="${tickX}" y2="42" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
+					}
+
+					const totalBracketSvg = askTotal 
+						? `<path d="M 278,35 C 288,35 288,55 293,55 C 288,55 288,75 278,75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="302" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text>` 
+						: '';
+
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="350" height="115" viewBox="0 0 350 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="265" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="265" y1="25" x2="265" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="175" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${row2EndX}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#16a34a" stroke-width="2.5"></line><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
+
+					// 4. NỘI DUNG CÂU HỎI & LỜI GIẢI
+					if (askTotal) {
+						const questionText = `<div><p>${ctx.intro} ${ctx.sub1} ${ctx.verb} $${valA}$ ${ctx.unit}. Số ${ctx.unitFull} của ${ctx.sub2} bằng $\\frac{1}{${x}}$ ${ctx.sub1} theo sơ đồ sau:</p>` +
+							diagramHtml +
+							`<p>Hỏi ${ctx.totalTarget} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+						const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Tìm một trong các phần bằng nhau & Tính tổng):</p>` +
+							`<p><b>Bước 1:</b> Số ${ctx.unitFull} của ${ctx.sub2} là:<br>&emsp;$${valA} : ${x} = ${valB}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 2:</b> ${ctx.totalTarget.charAt(0).toUpperCase() + ctx.totalTarget.slice(1)} là:<br>&emsp;$${valA} + ${valB} = ${total}$ (${ctx.unit})</p>` +
+							`<p><b>Đáp số:</b> $${total}$ ${ctx.unit}.</p>`;
+
+						return makeQ(
+							questionText,
+							`${total} ${ctx.unit}`,
+							[
+								() => `${valB} ${ctx.unit}`,
+								() => `${valA + x} ${ctx.unit}`,
+								() => `${valA * 2} ${ctx.unit}`
+							],
+							explainHtml
+						);
+					} else {
+						const questionText = `<div><p>${ctx.intro} ${ctx.sub1} ${ctx.verb} $${valA}$ ${ctx.unit}. Số ${ctx.unitFull} của ${ctx.sub2} bằng $\\frac{1}{${x}}$ ${ctx.sub1} theo sơ đồ sau:</p>` +
+							diagramHtml +
+							`<p>Hỏi ${ctx.sub2} ${ctx.verb} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+						const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Tìm một trong các phần bằng nhau của một số):</p>` +
+							`<p>Muốn tìm $\\frac{1}{${x}}$ của $${valA}$ ${ctx.unit}, ta lấy $${valA}$ chia cho $${x}$:</p>` +
+							`<p>&emsp;$${valA} : ${x} = ${valB}$ (${ctx.unit})</p>` +
+							`<p><b>Đáp số:</b> $${valB}$ ${ctx.unit}.</p>`;
+
+						return makeQ(
+							questionText,
+							`${valB} ${ctx.unit}`,
+							[
+								() => `${valA - x} ${ctx.unit}`,
+								() => `${valA * x} ${ctx.unit}`,
+								() => `${total} ${ctx.unit}`
+							],
+							explainHtml
+						);
+					}
+				},
+				() => {
+					// 1. NGỮ CẢNH ĐA DẠNG (VĂN PHONG TỰ NHIÊN, KHÔNG LẶP TỪ)
+					const contexts = [
+						{
+							intro: 'Trong đợt trồng cây,',
+							sub1: 'Đội I',
+							sub2: 'Đội II',
+							svg1: 'Đội I:',
+							svg2: 'Đội II:',
+							unit: 'cây',
+							unitFull: 'cây xanh',
+							verb: 'trồng được',
+							totalTarget: 'cả hai đội trồng được tất cả'
+						},
+						{
+							intro: 'Ở một cửa hàng lương thực,',
+							sub1: 'cửa hàng A',
+							sub2: 'cửa hàng B',
+							svg1: 'CH A:',
+							svg2: 'CH B:',
+							unit: 'kg',
+							unitFull: 'kg gạo',
+							verb: 'bán được',
+							totalTarget: 'cả hai cửa hàng bán được tất cả'
+						},
+						{
+							intro: 'Trong kho,',
+							sub1: 'thùng thứ nhất',
+							sub2: 'thùng thứ hai',
+							svg1: 'Thùng 1:',
+							svg2: 'Thùng 2:',
+							unit: 'lít',
+							unitFull: 'lít dầu',
+							verb: 'chứa',
+							totalTarget: 'cả hai thùng chứa tất cả'
+						},
+						{
+							intro: 'Trong phong trào Kế hoạch nhỏ,',
+							sub1: 'lớp 3A',
+							sub2: 'lớp 3B',
+							svg1: 'Lớp 3A:',
+							svg2: 'Lớp 3B:',
+							unit: 'kg',
+							unitFull: 'kg giấy vụn',
+							verb: 'thu gom được',
+							totalTarget: 'cả hai lớp thu gom được tất cả'
+						},
+						{
+							intro: 'Tại một nhà máy,',
+							sub1: 'tháng trước',
+							sub2: 'tháng này',
+							svg1: 'Tháng trước:',
+							svg2: 'Tháng này:',
+							unit: 'sản phẩm',
+							unitFull: 'sản phẩm',
+							verb: 'sản xuất được',
+							totalTarget: 'cả hai tháng sản xuất được tất cả'
+						}
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					// 2. SINH DỮ LIỆU SỐ
+					const x = getRandomInt(3, 5);
+					const k = getRandomInt(4, 8);
+					const valA = x * k;
+					const fracPart = k;
+					const valB = valA - fracPart;
+					const total = valA + valB;
+					const askTotal = getRandomInt(0, 1) === 1;
+
+					// 3. VẼ SƠ ĐỒ SVG "GIẢM ĐI 1/X" (SỬ DỤNG THẺ ĐÓNG ĐẦY ĐỦ CHỐNG LỖI HTML)
+					const baseWidth = 180;
+					const onePartW = Math.round(baseWidth / x);
+					const row1EndX = 85 + baseWidth;
+					const row2EndX = row1EndX - onePartW;
+
+					let innerTicksA = '';
+					for (let i = 1; i < x; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicksA += `<line x1="${tickX}" y1="28" x2="${tickX}" y2="42" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
+					}
+
+					const bracketX = row1EndX + 10;
+					const totalBracketSvg = askTotal 
+						? `<path d="M ${bracketX},35 C ${bracketX + 10},35 ${bracketX + 10},55 ${bracketX + 15},55 C ${bracketX + 10},55 ${bracketX + 10},75 ${bracketX},75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="${bracketX + 22}" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text>` 
+						: '';
+
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="380" height="115" viewBox="0 0 380 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${row1EndX}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${row1EndX}" y1="25" x2="${row1EndX}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="${85 + Math.round(baseWidth / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${row2EndX}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="75" x2="${row1EndX}" y2="75" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="4 3"></line><line x1="${row1EndX}" y1="65" x2="${row1EndX}" y2="85" stroke="#ef4444" stroke-width="2.5"></line><text x="${row2EndX + Math.round(onePartW / 2)}" y="62" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">-1/${x}</text><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
+
+					// 4. ĐỀ BÀI VÀ BÀI GIẢI
+					if (askTotal) {
+						const questionText = `<div><p>${ctx.intro} ${ctx.sub1} ${ctx.verb} $${valA}$ ${ctx.unitFull}. Số ${ctx.unitFull} của ${ctx.sub2} giảm đi một lượng bằng $\\frac{1}{${x}}$ số ${ctx.unitFull} của ${ctx.sub1} theo sơ đồ sau:</p>` +
+							diagramHtml +
+							`<p>Hỏi ${ctx.totalTarget} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+						const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Giảm đi $\\frac{1}{${x}}$ của dữ kiện ban đầu & Tính tổng):</p>` +
+							`<p><b>Bước 1:</b> Số ${ctx.unitFull} giảm đi ở ${ctx.sub2} là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 2:</b> ${ctx.sub2.charAt(0).toUpperCase() + ctx.sub2.slice(1)} ${ctx.verb} số ${ctx.unitFull} là:<br>&emsp;$${valA} - ${fracPart} = ${valB}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 3:</b> ${ctx.totalTarget.charAt(0).toUpperCase() + ctx.totalTarget.slice(1)} là:<br>&emsp;$${valA} + ${valB} = ${total}$ (${ctx.unit})</p>` +
+							`<p><b>Đáp số:</b> $${total}$ ${ctx.unit}.</p>`;
+
+						return makeQ(
+							questionText,
+							`${total} ${ctx.unit}`,
+							[
+								() => `${valB} ${ctx.unit}`,
+								() => `${valA + fracPart} ${ctx.unit}`,
+								() => `${valA * 2} ${ctx.unit}`
+							],
+							explainHtml
+						);
+					} else {
+						const questionText = `<div><p>${ctx.intro} ${ctx.sub1} ${ctx.verb} $${valA}$ ${ctx.unitFull}. ${ctx.sub2.charAt(0).toUpperCase() + ctx.sub2.slice(1)} ${ctx.verb} ít hơn ${ctx.sub1} một lượng bằng $\\frac{1}{${x}}$ số ${ctx.unitFull} của ${ctx.sub1} theo sơ đồ sau:</p>` +
+							diagramHtml +
+							`<p>Hỏi ${ctx.sub2} ${ctx.verb} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+						const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Ít hơn $\\frac{1}{${x}}$ của dữ kiện ban đầu):</p>` +
+							`<p><b>Bước 1:</b> Số ${ctx.unitFull} ${ctx.sub2} ít hơn ${ctx.sub1} là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 2:</b> ${ctx.sub2.charAt(0).toUpperCase() + ctx.sub2.slice(1)} ${ctx.verb} số ${ctx.unitFull} là:<br>&emsp;$${valA} - ${fracPart} = ${valB}$ (${ctx.unit})</p>` +
+							`<p><b>Đáp số:</b> $${valB}$ ${ctx.unit}.</p>`;
+
+						return makeQ(
+							questionText,
+							`${valB} ${ctx.unit}`,
+							[
+								() => `${fracPart} ${ctx.unit}`,
+								() => `${valA - x} ${ctx.unit}`,
+								() => `${valA + fracPart} ${ctx.unit}`
+							],
+							explainHtml
+						);
+					}
+				},
+				() => {
+					// 1. NGỮ CẢNH ĐA DẠNG
+					const contexts = [
+						{
+							intro: 'Tại một trang trại,',
+							sub1: 'trang trại A',
+							sub2: 'trang trại B',
+							svg1: 'Trại A:',
+							svg2: 'Trại B:',
+							unit: 'con',
+							unitFull: 'con gà',
+							verb: 'nuôi được',
+							totalTarget: 'cả hai trang trại nuôi được tất cả'
+						},
+						{
+							intro: 'Tại một nhà máy,',
+							sub1: 'tháng trước',
+							sub2: 'tháng này',
+							svg1: 'Tháng trước:',
+							svg2: 'Tháng này:',
+							unit: 'sản phẩm',
+							unitFull: 'sản phẩm',
+							verb: 'sản xuất được',
+							totalTarget: 'cả hai tháng sản xuất được tất cả'
+						},
+						{
+							intro: 'Trong đợt trồng cây,',
+							sub1: 'đội 1',
+							sub2: 'đội 2',
+							svg1: 'Đội 1:',
+							svg2: 'Đội 2:',
+							unit: 'cây',
+							unitFull: 'cây xanh',
+							verb: 'trồng được',
+							totalTarget: 'cả hai đội trồng được tất cả'
+						},
+						{
+							intro: 'Ở cửa hàng lương thực,',
+							sub1: 'ngày thứ nhất',
+							sub2: 'ngày thứ hai',
+							svg1: 'Ngày 1:',
+							svg2: 'Ngày 2:',
+							unit: 'kg',
+							unitFull: 'kg gạo',
+							verb: 'bán được',
+							totalTarget: 'cả hai ngày bán được tất cả'
+						},
+						{
+							intro: 'Trong kho,',
+							sub1: 'thùng thứ nhất',
+							sub2: 'thùng thứ hai',
+							svg1: 'Thùng 1:',
+							svg2: 'Thùng 2:',
+							unit: 'lít',
+							unitFull: 'lít dầu',
+							verb: 'chứa',
+							totalTarget: 'cả hai thùng chứa tất cả'
+						}
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					// 2. SINH DỮ LIỆU SỐ
+					const x = getRandomInt(2, 5);
+					const k = getRandomInt(5, 10);
+					const valA = x * k;
+					const fracPart = k;
+					const valB = valA + fracPart;
+					const total = valA + valB;
+					const askTotal = getRandomInt(0, 1) === 1;
+
+					// 3. VẼ SƠ ĐỒ SVG "TĂNG THÊM 1/X" (SỬ DỤNG THẺ ĐÓNG ĐẦY ĐỦ CHỐNG LỖI HTML)
+					const baseWidth = 150;
+					const onePartW = Math.round(baseWidth / x);
+					const row2EndX = 85 + baseWidth + onePartW;
+
+					let innerTicksA = '';
+					for (let i = 1; i < x; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicksA += `<line x1="${tickX}" y1="28" x2="${tickX}" y2="42" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
+					}
+
+					const bracketX = row2EndX + 10;
+					const totalBracketSvg = askTotal 
+						? `<path d="M ${bracketX},35 C ${bracketX + 10},35 ${bracketX + 10},55 ${bracketX + 15},55 C ${bracketX + 10},55 ${bracketX + 10},75 ${bracketX},75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="${bracketX + 22}" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text>` 
+						: '';
+
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="380" height="115" viewBox="0 0 380 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${85 + baseWidth}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="25" x2="${85 + baseWidth}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="${85 + Math.round(baseWidth / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${85 + baseWidth}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="65" x2="${85 + baseWidth}" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="75" x2="${row2EndX}" y2="75" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="4 3"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#ef4444" stroke-width="2.5"></line><text x="${85 + baseWidth + Math.round(onePartW / 2)}" y="62" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">+1/${x}</text><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
+
+					// 4. ĐỀ BÀI VÀ BÀI GIẢI
+					if (askTotal) {
+						const questionText = `<div><p>${ctx.intro} ${ctx.sub1} ${ctx.verb} $${valA}$ ${ctx.unitFull}. Số ${ctx.unitFull} của ${ctx.sub2} tăng thêm một lượng bằng $\\frac{1}{${x}}$ số ${ctx.unitFull} của ${ctx.sub1} theo sơ đồ sau:</p>` +
+							diagramHtml +
+							`<p>Hỏi ${ctx.totalTarget} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+						const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Tăng thêm $\\frac{1}{${x}}$ của dữ kiện ban đầu & Tính tổng):</p>` +
+							`<p><b>Bước 1:</b> Số ${ctx.unitFull} tăng thêm ở ${ctx.sub2} là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 2:</b> ${ctx.sub2.charAt(0).toUpperCase() + ctx.sub2.slice(1)} ${ctx.verb} số ${ctx.unitFull} là:<br>&emsp;$${valA} + ${fracPart} = ${valB}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 3:</b> ${ctx.totalTarget.charAt(0).toUpperCase() + ctx.totalTarget.slice(1)} là:<br>&emsp;$${valA} + ${valB} = ${total}$ (${ctx.unit})</p>` +
+							`<p><b>Đáp số:</b> $${total}$ ${ctx.unit}.</p>`;
+
+						return makeQ(
+							questionText,
+							`${total} ${ctx.unit}`,
+							[
+								() => `${valB} ${ctx.unit}`,
+								() => `${valA + x} ${ctx.unit}`,
+								() => `${total - fracPart} ${ctx.unit}`
+							],
+							explainHtml
+						);
+					} else {
+						const questionText = `<div><p>${ctx.intro} ${ctx.sub1} ${ctx.verb} $${valA}$ ${ctx.unitFull}. Số ${ctx.unitFull} của ${ctx.sub2} tăng thêm một lượng bằng $\\frac{1}{${x}}$ số ${ctx.unitFull} của ${ctx.sub1} theo sơ đồ sau:</p>` +
+							diagramHtml +
+							`<p>Hỏi ${ctx.sub2} ${ctx.verb} bao nhiêu ${ctx.unitFull}?</p></div>`;
+
+						const explainHtml = `<p class="font-bold text-blue-700">Bài giải (Tăng thêm $\\frac{1}{${x}}$ của dữ kiện ban đầu):</p>` +
+							`<p><b>Bước 1:</b> Số ${ctx.unitFull} tăng thêm ở ${ctx.sub2} là:<br>&emsp;$${valA} : ${x} = ${fracPart}$ (${ctx.unit})</p>` +
+							`<p><b>Bước 2:</b> ${ctx.sub2.charAt(0).toUpperCase() + ctx.sub2.slice(1)} ${ctx.verb} số ${ctx.unitFull} là:<br>&emsp;$${valA} + ${fracPart} = ${valB}$ (${ctx.unit})</p>` +
+							`<p><b>Đáp số:</b> $${valB}$ ${ctx.unit}.</p>`;
+
+						return makeQ(
+							questionText,
+							`${valB} ${ctx.unit}`,
+							[
+								() => `${fracPart} ${ctx.unit}`,
+								() => `${valA + x} ${ctx.unit}`,
+								() => `${valA * 2} ${ctx.unit}`
+							],
+							explainHtml
+						);
+					}
+				}
             ],
             g3_prob_stat: [
-                () => {
-                    const red = getRandomInt(3, 6);
-                    return makeQ(
-                        `Trong hộp có $${red}$ quả bóng màu đỏ. Không nhìn vào hộp, Nam lấy ra 1 quả bóng. Khả năng sự kiện "Nam lấy được quả bóng màu đỏ" là:`,
-                        `Chắc chắn`,
-                        [() => `Có thể`, () => `Không thể`, () => `Chưa xác định`],
-                        `<p class="font-bold text-blue-700">Bài giải (Khả năng xảy ra của sự kiện):</p><p>Vì trong hộp <b>chỉ toàn quả bóng màu đỏ</b> nên khi lấy 1 quả bóng ra, khả năng chắc chắn lấy được quả bóng màu đỏ.</p><p><b>Đáp số:</b> Chắc chắn.</p>`
-                    );
-                },
+				() => {
+					// 1. NGỮ CẢNH ĐA DẠNG (Bóng, Kẹo, Bút, Trái cây)
+					const contexts = [
+						{
+							person: 'Nam',
+							container: 'trong hộp',
+							item: 'quả bóng',
+							attrA: 'màu đỏ',
+							attrB: 'màu xanh'
+						},
+						{
+							person: 'Lan',
+							container: 'trong túi',
+							item: 'viên kẹo',
+							attrA: 'vị dâu',
+							attrB: 'vị cam'
+						},
+						{
+							person: 'Minh',
+							container: 'trong hộp bút',
+							item: 'cây bút',
+							attrA: 'mực xanh',
+							attrB: 'mực đỏ'
+						},
+						{
+							person: 'An',
+							container: 'trong giỏ',
+							item: 'quả táo',
+							attrA: 'màu đỏ',
+							attrB: 'màu xanh'
+						}
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					// 2. NGẪU NHIÊN TRƯỜNG HỢP: 0 - Chắc chắn | 1 - Có thể | 2 - Không thể
+					const eventType = getRandomInt(0, 2);
+
+					let countA = 0;
+					let countB = 0;
+					let description = '';
+					let correctAns = '';
+					let distractors = [];
+					let explainText = '';
+
+					if (eventType === 0) {
+						// --- TRƯỜNG HỢP CHẮC CHẮN (Chỉ có loại A) ---
+						countA = getRandomInt(3, 8);
+						description = `${ctx.container.charAt(0).toUpperCase() + ctx.container.slice(1)} có $${countA}$ ${ctx.item} ${ctx.attrA}.`;
+						correctAns = 'Chắc chắn';
+						distractors = [() => 'Có thể', () => 'Không thể', () => 'Chưa xác định'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải (Khả năng xảy ra của sự kiện):</p>` +
+							`<p>Vì ${ctx.container} <b>chỉ toàn ${ctx.item} ${ctx.attrA}</b> nên khi lấy ra 1 ${ctx.item}, sự kiện lấy được ${ctx.item} ${ctx.attrA} là <b>Chắc chắn</b>.</p>` +
+							`<p><b>Đáp số:</b> Chắc chắn.</p>`;
+
+					} else if (eventType === 1) {
+						// --- TRƯỜNG HỢP CÓ THỂ (Có cả loại A và B) ---
+						countA = getRandomInt(2, 6);
+						countB = getRandomInt(2, 6);
+						description = `${ctx.container.charAt(0).toUpperCase() + ctx.container.slice(1)} có $${countA}$ ${ctx.item} ${ctx.attrA} và $${countB}$ ${ctx.item} ${ctx.attrB}.`;
+						correctAns = 'Có thể';
+						distractors = [() => 'Chắc chắn', () => 'Không thể', () => 'Chưa xác định'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải (Khả năng xảy ra của sự kiện):</p>` +
+							`<p>Vì ${ctx.container} <b>vừa có ${ctx.item} ${ctx.attrA}, vừa có ${ctx.item} ${ctx.attrB}</b> nên khi lấy ra 1 ${ctx.item}, sự kiện lấy được ${ctx.item} ${ctx.attrA} là <b>Có thể</b>.</p>` +
+							`<p><b>Đáp số:</b> Có thể.</p>`;
+
+					} else {
+						// --- TRƯỜNG HỢP KHÔNG THỂ (Chỉ có loại B, hỏi loại A) ---
+						countB = getRandomInt(3, 8);
+						description = `${ctx.container.charAt(0).toUpperCase() + ctx.container.slice(1)} có $${countB}$ ${ctx.item} ${ctx.attrB}.`;
+						correctAns = 'Không thể';
+						distractors = [() => 'Có thể', () => 'Chắc chắn', () => 'Chưa xác định'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải (Khả năng xảy ra của sự kiện):</p>` +
+							`<p>Vì ${ctx.container} <b>chỉ có ${ctx.item} ${ctx.attrB}</b> (không có ${ctx.item} ${ctx.attrA} nào) nên sự kiện lấy được ${ctx.item} ${ctx.attrA} là <b>Không thể</b>.</p>` +
+							`<p><b>Đáp số:</b> Không thể.</p>`;
+					}
+
+					const questionText = `${description} Không nhìn vào, ${ctx.person} lấy ra 1 ${ctx.item}. Khả năng sự kiện "${ctx.person} lấy được ${ctx.item} ${ctx.attrA}" là:`;
+
+					return makeQ(
+						questionText,
+						correctAns,
+						distractors,
+						explainText
+					);
+				},
 				() => {
 					const red = getRandomInt(3, 6), blue = getRandomInt(2, 5);
 					return makeQ(
@@ -1728,33 +2437,107 @@ let scratchCtx = null;
 						`<p class="font-bold text-blue-700">Bài giải:</p><p>Vì trong túi có cả bi đỏ và bi xanh, nên khi lấy ngẫu nhiên 1 viên bi, việc lấy được bi màu đỏ là <b>Có thể</b> xảy ra (có thể lấy được bi đỏ hoặc bi xanh).</p><p><b>Đáp số:</b> Có thể.</p>`
 					);
 				},
-				// 2a. Sự kiện "Chắc chắn" với con xúc xắc
 				() => {
-					return makeQ(
-						`Gieo một con xúc xắc 6 mặt (từ 1 đến 6 chấm) một lần. Khả năng sự kiện "Mặt xuất hiện có số chấm bé hơn 7" là:`,
-						`Chắc chắn`,
-						[() => `Có thể`, () => `Không thể`, () => `Chưa rõ`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Các mặt của con xúc xắc chỉ gồm $1, 2, 3, 4, 5, 6$ chấm (tất cả đều bé hơn 7). Do đó, sự kiện mặt xuất hiện có số chấm bé hơn 7 là <b>Chắc chắn</b>.</p><p><b>Đáp số:</b> Chắc chắn.</p>`
-					);
-				},
+					// 0: Chắc chắn | 1: Có thể | 2: Không thể
+					const type = getRandomInt(0, 2);
 
-				// 2b. Sự kiện "Không thể" với con xúc xắc
-				() => {
-					const target = getRandomInt(7, 10);
+					let eventText = '';
+					let correctAns = '';
+					let distractors = [];
+					let explainText = '';
+
+					if (type === 0) {
+						// --- 1. TRƯỜNG HỢP CHẮC CHẮN ---
+						const subType = getRandomInt(0, 1);
+						if (subType === 0) {
+							const limit = getRandomInt(7, 10);
+							eventText = `Mặt xuất hiện có số chấm bé hơn ${limit}`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Các mặt của con xúc xắc chỉ gồm $1, 2, 3, 4, 5, 6$ chấm (tất cả đều bé hơn ${limit}). Do đó, khả năng xảy ra sự kiện là <b>Chắc chắn</b>.</p><p><b>Đáp số:</b> Chắc chắn.</p>`;
+						} else {
+							eventText = `Mặt xuất hiện có số chấm lớn hơn 0`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Các mặt của con xúc xắc gồm $1, 2, 3, 4, 5, 6$ chấm (tất cả đều lớn hơn 0). Do đó, khả năng xảy ra sự kiện là <b>Chắc chắn</b>.</p><p><b>Đáp số:</b> Chắc chắn.</p>`;
+						}
+						correctAns = 'Chắc chắn';
+						distractors = [() => 'Có thể', () => 'Không thể', () => 'Chưa rõ'];
+
+					} else if (type === 1) {
+						// --- 2. TRƯỜNG HỢP CÓ THỂ ---
+						const subType = getRandomInt(0, 2);
+						if (subType === 0) {
+							const isEven = getRandomInt(0, 1) === 0;
+							const term = isEven ? 'chẵn' : 'lẻ';
+							const numbers = isEven ? '$2, 4, 6$' : '$1, 3, 5$';
+							eventText = `Mặt xuất hiện có số chấm là số ${term}`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Con xúc xắc có các mặt ${numbers} là số ${term}, nhưng cũng có các mặt còn lại. Do đó, khả năng xuất hiện mặt có số chấm ${term} là <b>Có thể</b>.</p><p><b>Đáp số:</b> Có thể.</p>`;
+						} else if (subType === 1) {
+							const target = getRandomInt(1, 6);
+							eventText = `Mặt xuất hiện có $${target}$ chấm`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Con xúc xắc có mặt $${target}$ chấm, nhưng khi gieo cũng có thể xuất hiện các mặt khác ($1, 2, 3, 4, 5, 6$). Do đó, khả năng xảy ra sự kiện này là <b>Có thể</b>.</p><p><b>Đáp số:</b> Có thể.</p>`;
+						} else {
+							const target = getRandomInt(2, 4);
+							eventText = `Mặt xuất hiện có số chấm lớn hơn $${target}$`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Có các mặt lớn hơn $${target}$ chấm (như $${target + 1}, 6$), nhưng cũng có các mặt nhỏ hơn hoặc bằng $${target}$. Do đó, khả năng xảy ra sự kiện là <b>Có thể</b>.</p><p><b>Đáp số:</b> Có thể.</p>`;
+						}
+						correctAns = 'Có thể';
+						distractors = [() => 'Chắc chắn', () => 'Không thể', () => 'Chưa rõ'];
+
+					} else {
+						// --- 3. TRƯỜNG HỢP KHÔNG THỂ ---
+						const subType = getRandomInt(0, 1);
+						if (subType === 0) {
+							const target = getRandomInt(7, 10);
+							eventText = `Mặt xuất hiện có $${target}$ chấm`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Con xúc xắc 6 mặt chỉ có các mặt từ $1$ đến $6$ chấm, không có mặt $${target}$ chấm. Vì vậy, sự kiện này là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`;
+						} else {
+							eventText = `Mặt xuất hiện có số chấm lớn hơn 6`;
+							explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Số chấm lớn nhất trên con xúc xắc chỉ là $6$. Vì vậy, sự kiện xuất hiện mặt có số chấm lớn hơn 6 là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`;
+						}
+						correctAns = 'Không thể';
+						distractors = [() => 'Chắc chắn', () => 'Có thể', () => 'Chưa rõ'];
+					}
+
 					return makeQ(
-						`Gieo một con xúc xắc 6 mặt (từ 1 đến 6 chấm) một lần. Khả năng sự kiện "Mặt xuất hiện có $${target}$ chấm" là:`,
-						`Không thể`,
-						[() => `Có thể`, () => `Chắc chắn`, () => `Chưa xác định`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Con xúc xắc chỉ có các mặt từ $1$ đến $6$ chấm, không có mặt $${target}$ chấm. Vì vậy, sự kiện này là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`
+						`Gieo một con xúc xắc 6 mặt (từ 1 đến 6 chấm) một lần. Khả năng sự kiện "${eventText}" là:`,
+						correctAns,
+						distractors,
+						explainText
 					);
 				},
 				() => {
-					const evens = [2, 4, 6, 8];
+					// 0: Chắc chắn (Tất cả đều chẵn)
+					// 1: Có thể (Vừa có chẵn vừa có lẻ)
+					// 2: Không thể (Tất cả đều lẻ)
+					const type = getRandomInt(0, 2);
+
+					let cards = [];
+					let correctAns = '';
+					let distractors = [];
+					let explainText = '';
+
+					if (type === 0) {
+						cards = [2, 4, 6, 8];
+						correctAns = 'Chắc chắn';
+						distractors = [() => 'Có thể', () => 'Không thể', () => 'Chưa rõ'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Tất cả các tấm thẻ trong hộp ($2, 4, 6, 8$) đều là <b>số chẵn</b>, nên khả năng rút được tấm thẻ ghi số chẵn là <b>Chắc chắn</b>.</p><p><b>Đáp số:</b> Chắc chắn.</p>`;
+					} else if (type === 1) {
+						cards = [2, 3, 6, 7];
+						correctAns = 'Có thể';
+						distractors = [() => 'Chắc chắn', () => 'Không thể', () => 'Chưa rõ'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Trong hộp vừa có số chẵn ($2, 6$), vừa có số lẻ ($3, 7$), nên khả năng rút được tấm thẻ ghi số chẵn là <b>Có thể</b>.</p><p><b>Đáp số:</b> Có thể.</p>`;
+					} else {
+						cards = [1, 3, 5, 7];
+						correctAns = 'Không thể';
+						distractors = [() => 'Chắc chắn', () => 'Có thể', () => 'Chưa rõ'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Tất cả các tấm thẻ trong hộp ($1, 3, 5, 7$) đều là <b>số lẻ</b> (không có số chẵn nào), nên khả năng rút được tấm thẻ ghi số chẵn là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`;
+					}
+
+					const cardsStr = cards.join(', ');
+
 					return makeQ(
-						`Trong hộp có 4 tấm thẻ ghi các số $2, 4, 6, 8$. Mai rút ngẫu nhiên 1 tấm thẻ. Khả năng sự kiện "Mai rút được tấm thẻ ghi số chẵn" là:`,
-						`Chắc chắn`,
-						[() => `Có thể`, () => `Không thể`, () => `Chưa rõ`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Tất cả các tấm thẻ trong hộp ($2, 4, 6, 8$) đều là <b>số chẵn</b>, nên khi rút 1 tấm thẻ, khả năng rút được số chẵn là <b>Chắc chắn</b>.</p><p><b>Đáp số:</b> Chắc chắn.</p>`
+						`Trong hộp có 4 tấm thẻ ghi các số $${cardsStr}$. Mai rút ngẫu nhiên 1 tấm thẻ. Khả năng sự kiện "Mai rút được tấm thẻ ghi số chẵn" là:`,
+						correctAns,
+						distractors,
+						explainText
 					);
 				},
 				() => {
@@ -1768,12 +2551,44 @@ let scratchCtx = null;
 				},
 				() => {
 					const maxNum = getRandomInt(8, 12);
-					const target = maxNum + getRandomInt(3, 8);
+					// 0: Chắc chắn | 1: Có thể | 2: Không thể
+					const eventType = getRandomInt(0, 2);
+
+					let eventText = '';
+					let correctAns = '';
+					let distractors = [];
+					let explainText = '';
+
+					if (eventType === 0) {
+						// --- 1. CHẮC CHẮN (Sự kiện số nhỏ hơn maxNum + 1) ---
+						const target = maxNum + 1;
+						eventText = `Bình rút được tấm thẻ ghi số nhỏ hơn $${target}$`;
+						correctAns = 'Chắc chắn';
+						distractors = [() => 'Có thể', () => 'Không thể', () => 'Chưa xác định'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Các tấm thẻ ghi các số từ $1$ đến $${maxNum}$, tất cả các số này đều nhỏ hơn $${target}$. Do đó, sự kiện này là <b>Chắc chắn</b>.</p><p><b>Đáp số:</b> Chắc chắn.</p>`;
+
+					} else if (eventType === 1) {
+						// --- 2. CÓ THỂ (Sự kiện rút trúng số nằm trong khoảng từ 1 đến maxNum) ---
+						const target = getRandomInt(1, maxNum);
+						eventText = `Bình rút được tấm thẻ ghi số $${target}$`;
+						correctAns = 'Có thể';
+						distractors = [() => 'Chắc chắn', () => 'Không thể', () => 'Chưa xác định'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Trong các tấm thẻ từ $1$ đến $${maxNum}$ có thẻ ghi số $${target}$, nhưng khi rút cũng có thể ra các số khác. Do đó, sự kiện này là <b>Có thể</b>.</p><p><b>Đáp số:</b> Có thể.</p>`;
+
+					} else {
+						// --- 3. KHÔNG THỂ (Sự kiện rút trúng số vượt quá maxNum) ---
+						const target = maxNum + getRandomInt(3, 8);
+						eventText = `Bình rút được tấm thẻ ghi số $${target}$`;
+						correctAns = 'Không thể';
+						distractors = [() => 'Có thể', () => 'Chắc chắn', () => 'Chưa xác định'];
+						explainText = `<p class="font-bold text-blue-700">Bài giải:</p><p>Các tấm thẻ chỉ ghi các số từ $1$ đến $${maxNum}$, không có thẻ nào ghi số $${target}$. Do đó, sự kiện này là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`;
+					}
+
 					return makeQ(
-						`Có các tấm thẻ ghi các số từ $1$ đến $${maxNum}$. Bình rút ngẫu nhiên 1 tấm thẻ. Khả năng sự kiện "Bình rút được tấm thẻ ghi số $${target}$" là:`,
-						`Không thể`,
-						[() => `Có thể`, () => `Chắc chắn`, () => `Chưa xác định`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Các tấm thẻ chỉ ghi các số từ $1$ đến $${maxNum}$, không có thẻ ghi số $${target}$. Do đó, sự kiện này là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`
+						`Có các tấm thẻ ghi các số từ $1$ đến $${maxNum}$. Bình rút ngẫu nhiên 1 tấm thẻ. Khả năng sự kiện "${eventText}" là:`,
+						correctAns,
+						distractors,
+						explainText
 					);
 				},
 				() => {
@@ -1818,16 +2633,7 @@ let scratchCtx = null;
 						[() => distractors[0], () => distractors[1], () => "Chưa xác định"],
 						`<p class="font-bold text-blue-700">Bài giải:</p><p>${explanation}</p><p><b>Đáp số:</b> ${ans}.</p>`
 					);
-				},
-                () => {
-                    const red = getRandomInt(3, 5), yellow = getRandomInt(2, 4);
-                    return makeQ(
-                        `Trong túi có $${red}$ viên bi đỏ và $${yellow}$ viên bi vàng. An lấy ngẫu nhiên 1 viên bi. Khả năng sự kiện "An lấy được viên bi màu xanh" là:`,
-                        `Không thể`,
-                        [() => `Có thể`, () => `Chắc chắn`, () => `Chưa rõ`],
-                        `<p class="font-bold text-blue-700">Bài giải:</p><p>Trong túi không hề có viên bi màu xanh nào, nên việc lấy được bi màu xanh là <b>Không thể</b>.</p><p><b>Đáp số:</b> Không thể.</p>`
-                    );
-                }
+				}
             ],
             g3_time_clock: [
                 () => {
