@@ -1036,41 +1036,454 @@ let scratchCtx = null;
                 if (timerEl) timerEl.innerText = `${mins}:${secs}`;
             }, 1000);
         }
+		// Hàm tạo câu hỏi đảm bảo 100% KHÔNG PHÁT SINH SỐ THẬP PHÂN (cho Toán lớp 3)
+		function makeExpressionQuestion(pattern) {
+			const fmt = (n) => n.toLocaleString('vi-VN');
+
+			let a, b, c, step1, result, step1Text, step2Text;
+
+			switch (pattern) {
+				// === NHÓM 1: KHÔNG NGOẶC ===
+				case "a+b+c":
+					a = getRandomInt(100, 40000); b = getRandomInt(100, 40000); step1 = a + b;
+					c = getRandomInt(100, 99999 - step1); result = step1 + c;
+					step1Text = `$${fmt(a)} + ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} + ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a+b-c":
+					a = getRandomInt(1000, 40000); b = getRandomInt(1000, 40000); step1 = a + b;
+					c = getRandomInt(100, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} + ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a+b×c":
+					b = getRandomInt(100, 2000); c = getRandomInt(2, 9); step1 = b * c;
+					a = getRandomInt(100, 99999 - step1); result = a + step1;
+					step1Text = `$${fmt(b)} \\times ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} + ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a+b:c":
+					c = getRandomInt(2, 9); step1 = getRandomInt(100, 10000); b = step1 * c;
+					a = getRandomInt(100, 99999 - step1); result = a + step1;
+					step1Text = `$${fmt(b)} : ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} + ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+
+				case "a-b+c":
+					step1 = getRandomInt(1000, 40000); b = getRandomInt(100, 20000); a = step1 + b;
+					c = getRandomInt(100, 99999 - step1); result = step1 + c;
+					step1Text = `$${fmt(a)} - ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} + ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a-b-c":
+					step1 = getRandomInt(1000, 40000); b = getRandomInt(100, 20000); a = step1 + b;
+					c = getRandomInt(100, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} - ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a-b×c":
+					b = getRandomInt(100, 2000); c = getRandomInt(2, 9); step1 = b * c;
+					a = getRandomInt(step1 + 100, 99999); result = a - step1;
+					step1Text = `$${fmt(b)} \\times ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} - ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a-b:c":
+					c = getRandomInt(2, 9); step1 = getRandomInt(100, 10000); b = step1 * c;
+					a = getRandomInt(step1 + 100, 99999); result = a - step1;
+					step1Text = `$${fmt(b)} : ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} - ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+
+				case "a×b+c":
+					a = getRandomInt(100, 10000); b = getRandomInt(2, 9); step1 = a * b;
+					c = getRandomInt(100, 99999 - step1); result = step1 + c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} + ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a×b-c":
+					a = getRandomInt(100, 10000); b = getRandomInt(2, 9); step1 = a * b;
+					c = getRandomInt(10, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a×b×c":
+					b = getRandomInt(2, 9); c = getRandomInt(2, 9);
+					a = getRandomInt(10, Math.floor(99999 / (b * c))); step1 = a * b; result = step1 * c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} \\times ${c} = ${fmt(result)}$`;
+					break;
+				case "a×b:c":
+				case "(a×b):c":
+					b = getRandomInt(2, 9); c = getRandomInt(2, 9);
+					const k1 = getRandomInt(10, Math.floor(99999 / (b * c)));
+					a = k1 * c; // Ép a chia hết cho c -> (a*b) luôn chia hết cho c
+					step1 = a * b; result = step1 / c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} : ${c} = ${fmt(result)}$`;
+					break;
+
+				case "a:b+c":
+				case "(a:b)+c":
+					b = getRandomInt(2, 9); step1 = getRandomInt(100, 10000); a = step1 * b;
+					c = getRandomInt(100, 99999 - step1); result = step1 + c;
+					step1Text = `$${fmt(a)} : ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} + ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a:b-c":
+				case "(a:b)-c":
+					b = getRandomInt(2, 9); step1 = getRandomInt(100, 10000); a = step1 * b;
+					c = getRandomInt(10, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} : ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "a:b×c":
+				case "(a:b)×c":
+					b = getRandomInt(2, 9); c = getRandomInt(2, 9);
+					step1 = getRandomInt(10, Math.floor(99999 / c)); a = step1 * b; result = step1 * c;
+					step1Text = `$${fmt(a)} : ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} \\times ${c} = ${fmt(result)}$`;
+					break;
+				case "a:b:c":
+				case "(a:b):c":
+					b = getRandomInt(2, 9); c = getRandomInt(2, 9);
+					result = getRandomInt(10, Math.floor(99999 / (b * c)));
+					step1 = result * c; a = step1 * b;
+					step1Text = `$${fmt(a)} : ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} : ${c} = ${fmt(result)}$`;
+					break;
+
+				// === NHÓM 2: NGOẶC Ở VẾ ĐẦU ===
+				case "(a+b)-c":
+					a = getRandomInt(100, 40000); b = getRandomInt(100, 40000); step1 = a + b;
+					c = getRandomInt(100, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} + ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "(a+b)×c":
+					c = getRandomInt(2, 9); step1 = getRandomInt(100, Math.floor(99999 / c));
+					a = getRandomInt(10, step1 - 10); b = step1 - a; result = step1 * c;
+					step1Text = `$${fmt(a)} + ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} \\times ${c} = ${fmt(result)}$`;
+					break;
+				case "(a+b):c":
+					c = getRandomInt(2, 9); result = getRandomInt(10, Math.floor(99999 / c));
+					step1 = result * c;
+					a = getRandomInt(10, step1 - 10); b = step1 - a;
+					step1Text = `$${fmt(a)} + ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} : ${c} = ${fmt(result)}$`;
+					break;
+
+				case "(a-b)+c":
+					step1 = getRandomInt(100, 40000); b = getRandomInt(100, 20000); a = step1 + b;
+					c = getRandomInt(100, 99999 - step1); result = step1 + c;
+					step1Text = `$${fmt(a)} - ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} + ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "(a-b)-c":
+					step1 = getRandomInt(1000, 40000); b = getRandomInt(100, 20000); a = step1 + b;
+					c = getRandomInt(100, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} - ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "(a-b)×c":
+					c = getRandomInt(2, 9); step1 = getRandomInt(100, Math.floor(99999 / c));
+					b = getRandomInt(100, 20000); a = step1 + b; result = step1 * c;
+					step1Text = `$${fmt(a)} - ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} \\times ${c} = ${fmt(result)}$`;
+					break;
+				case "(a-b):c":
+					c = getRandomInt(2, 9); result = getRandomInt(10, Math.floor(99999 / c));
+					step1 = result * c;
+					b = getRandomInt(100, 20000); a = step1 + b;
+					step1Text = `$${fmt(a)} - ${fmt(b)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} : ${c} = ${fmt(result)}$`;
+					break;
+
+				case "(a×b)+c":
+					a = getRandomInt(100, 10000); b = getRandomInt(2, 9); step1 = a * b;
+					c = getRandomInt(100, 99999 - step1); result = step1 + c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} + ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "(a×b)-c":
+					a = getRandomInt(100, 10000); b = getRandomInt(2, 9); step1 = a * b;
+					c = getRandomInt(10, step1 - 10); result = step1 - c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} - ${fmt(c)} = ${fmt(result)}$`;
+					break;
+				case "(a×b)×c":
+					b = getRandomInt(2, 9); c = getRandomInt(2, 9);
+					a = getRandomInt(10, Math.floor(99999 / (b * c))); step1 = a * b; result = step1 * c;
+					step1Text = `$${fmt(a)} \\times ${b} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(step1)} \\times ${c} = ${fmt(result)}$`;
+					break;
+
+				// === NHÓM 3: NGOẶC Ở VẾ SAU ===
+				case "a+(b+c)":
+					b = getRandomInt(100, 20000); c = getRandomInt(100, 20000); step1 = b + c;
+					a = getRandomInt(100, 99999 - step1); result = a + step1;
+					step1Text = `$${fmt(b)} + ${fmt(c)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} + ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a+(b-c)":
+					c = getRandomInt(100, 20000); step1 = getRandomInt(100, 20000); b = step1 + c;
+					a = getRandomInt(100, 99999 - step1); result = a + step1;
+					step1Text = `$${fmt(b)} - ${fmt(c)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} + ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a+(b×c)":
+					b = getRandomInt(100, 2000); c = getRandomInt(2, 9); step1 = b * c;
+					a = getRandomInt(100, 99999 - step1); result = a + step1;
+					step1Text = `$${fmt(b)} \\times ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} + ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a+(b:c)":
+					c = getRandomInt(2, 9); step1 = getRandomInt(100, 10000); b = step1 * c;
+					a = getRandomInt(100, 99999 - step1); result = a + step1;
+					step1Text = `$${fmt(b)} : ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} + ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+
+				case "a-(b+c)":
+					b = getRandomInt(100, 20000); c = getRandomInt(100, 20000); step1 = b + c;
+					a = getRandomInt(step1 + 100, 99999); result = a - step1;
+					step1Text = `$${fmt(b)} + ${fmt(c)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} - ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a-(b-c)":
+					c = getRandomInt(100, 20000); step1 = getRandomInt(100, 20000); b = step1 + c;
+					a = getRandomInt(step1 + 100, 99999); result = a - step1;
+					step1Text = `$${fmt(b)} - ${fmt(c)} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} - ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a-(b×c)":
+					b = getRandomInt(100, 2000); c = getRandomInt(2, 9); step1 = b * c;
+					a = getRandomInt(step1 + 100, 99999); result = a - step1;
+					step1Text = `$${fmt(b)} \\times ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} - ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a-(b:c)":
+					c = getRandomInt(2, 9); step1 = getRandomInt(100, 10000); b = step1 * c;
+					a = getRandomInt(step1 + 100, 99999); result = a - step1;
+					step1Text = `$${fmt(b)} : ${c} = ${fmt(step1)}$`;
+					step2Text = `$${fmt(a)} - ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+
+				case "a×(b+c)":
+					a = getRandomInt(2, 9); step1 = getRandomInt(100, Math.floor(99999 / a));
+					b = getRandomInt(10, step1 - 10); c = step1 - b; result = a * step1;
+					step1Text = `$${fmt(b)} + ${fmt(c)} = ${fmt(step1)}$`;
+					step2Text = `$${a} \\times ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a×(b-c)":
+					a = getRandomInt(2, 9); step1 = getRandomInt(100, Math.floor(99999 / a));
+					c = getRandomInt(10, 20000); b = step1 + c; result = a * step1;
+					step1Text = `$${fmt(b)} - ${fmt(c)} = ${fmt(step1)}$`;
+					step2Text = `$${a} \\times ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+				case "a×(b:c)":
+					a = getRandomInt(2, 9); c = getRandomInt(2, 9);
+					step1 = getRandomInt(10, Math.floor(99999 / a)); b = step1 * c; result = a * step1;
+					step1Text = `$${fmt(b)} : ${c} = ${fmt(step1)}$`;
+					step2Text = `$${a} \\times ${fmt(step1)} = ${fmt(result)}$`;
+					break;
+
+				case "a:(b+c)":
+					step1 = getRandomInt(2, 9); // Số chia < 10
+					b = getRandomInt(1, step1 - 1); c = step1 - b;
+					result = getRandomInt(10, Math.floor(99999 / step1)); a = result * step1;
+					step1Text = `$${fmt(b)} + ${fmt(c)} = ${step1}$`;
+					step2Text = `$${fmt(a)} : ${step1} = ${fmt(result)}$`;
+					break;
+				case "a:(b-c)":
+					step1 = getRandomInt(2, 9); // Số chia < 10
+					c = getRandomInt(1, 20); b = step1 + c;
+					result = getRandomInt(10, Math.floor(99999 / step1)); a = result * step1;
+					step1Text = `$${fmt(b)} - ${fmt(c)} = ${step1}$`;
+					step2Text = `$${fmt(a)} : ${step1} = ${fmt(result)}$`;
+					break;
+				case "a:(b×c)":
+					const validPairs = [[2, 2], [2, 3], [3, 2], [2, 4], [4, 2], [3, 3]];
+					const pair = validPairs[getRandomInt(0, validPairs.length - 1)];
+					b = pair[0]; c = pair[1]; step1 = b * c; // Số chia < 10
+					result = getRandomInt(10, Math.floor(99999 / step1)); a = result * step1;
+					step1Text = `$${fmt(b)} \\times ${c} = ${step1}$`;
+					step2Text = `$${fmt(a)} : ${step1} = ${fmt(result)}$`;
+					break;
+				case "a:(b:c)":
+					step1 = getRandomInt(2, 9); // Số chia < 10
+					c = getRandomInt(2, 9); b = step1 * c;
+					result = getRandomInt(10, Math.floor(99999 / step1)); a = result * step1;
+					step1Text = `$${fmt(b)} : ${c} = ${step1}$`;
+					step2Text = `$${fmt(a)} : ${step1} = ${fmt(result)}$`;
+					break;
+			}
+
+			// Tự động xác định quy tắc giải
+			let ruleText = "";
+			if (pattern.includes("(") || pattern.includes(")")) {
+				ruleText = "Biểu thức có dấu ngoặc, ta thực hiện <b>trong ngoặc trước, ngoài ngoặc sau</b>:";
+			} else if (pattern.includes("×") || pattern.includes(":")) {
+				ruleText = (pattern.includes("+") || pattern.includes("-"))
+					? "Biểu thức có phối hợp các phép tính, ta thực hiện <b>nhân chia trước, cộng trừ sau</b>:"
+					: "Biểu thức chỉ có phép tính nhân, chia, ta thực hiện lần lượt từ <b>trái sang phải</b>:";
+			} else {
+				ruleText = "Biểu thức chỉ có phép tính cộng, trừ, ta thực hiện lần lượt từ <b>trái sang phải</b>:";
+			}
+
+			let exprLatex = pattern
+				.replace(/a/g, fmt(a))
+				.replace(/b/g, fmt(b))
+				.replace(/c/g, fmt(c))
+				.replace(/×/g, "\\times");
+
+			const wrong1 = result + 100;
+			const wrong2 = Math.max(10, result - 100);
+			const wrong3 = result + 10;
+
+			return makeQ(
+				`<div>Tính giá trị của biểu thức: $${exprLatex}$</div>`,
+				`${fmt(result)}`,
+				[
+					() => `${fmt(wrong1)}`,
+					() => `${fmt(wrong2)}`,
+					() => `${fmt(wrong3)}`
+				],
+				`<p class="font-bold text-blue-700">Bài giải:</p>` +
+				`<p>${ruleText}</p>` +
+				`<p>• Bước 1: ${step1Text}</p>` +
+				`<p>• Bước 2: ${step2Text}</p>` +
+				`<p><b>Đáp số:</b> $${fmt(result)}$</p>`
+			);
+		}
+
+		// Danh sách 46 dạng toán
+		const ALL_EXPRESSION_PATTERNS = [
+			"a+b+c", "a+b-c", "a+b×c", "a+b:c",
+			"a-b+c", "a-b-c", "a-b×c", "a-b:c",
+			"a×b+c", "a×b-c", "a×b×c", "a×b:c",
+			"a:b+c", "a:b-c", "a:b×c", "a:b:c",
+			"(a+b)-c", "(a+b)×c", "(a+b):c",
+			"(a-b)+c", "(a-b)-c", "(a-b)×c", "(a-b):c",
+			"(a×b)+c", "(a×b)-c", "(a×b)×c", "(a×b):c",
+			"(a:b)+c", "(a:b)-c", "(a:b)×c", "(a:b):c",
+			"a+(b+c)", "a+(b-c)", "a+(b×c)", "a+(b:c)",
+			"a-(b+c)", "a-(b-c)", "a-(b×c)", "a-(b:c)",
+			"a×(b+c)", "a×(b-c)", "a×(b:c)",
+			"a:(b+c)", "a:(b-c)", "a:(b×c)", "a:(b:c)"
+		];
 
         const QUESTION_GENERATORS = {
             // --- LỚP 3 ---
             g3_numbers: [
-					() => {
-						const num = getRandomInt(10, 89) * 1000 + getRandomInt(1, 9) * 100 + getRandomInt(12, 89);
-						
-						const floorVal = Math.floor(num / 1000) * 1000; // Làm tròn xuống
-						const ceilVal = floorVal + 1000;                // Làm tròn lên
-						const roundedThousand = Math.round(num / 1000) * 1000; // Đáp án đúng
-						
-						// Tạo phương án nhiễu thực tế, không bị trùng lặp:
-						// 1. Làm tròn ngược chiều đúng
-						const distractor1 = roundedThousand === floorVal ? ceilVal : floorVal; 
-						// 2. Làm tròn "quá tay" thêm 1.000
-						const distractor2 = roundedThousand === floorVal ? floorVal - 1000 : ceilVal + 1000; 
-						// 3. Bẫy làm tròn nhầm sang hàng trăm
-						const distractor3 = Math.round(num / 100) * 100; 
+				() => {
+					const fmt = (n) => n.toLocaleString('vi-VN');
 
-						const hundredDigit = Math.floor((num % 1000) / 100);
+					// Ngẫu nhiên cấp làm tròn: 0 -> hàng chục, 1 -> hàng trăm, 2 -> hàng nghìn
+					const type = getRandomInt(0, 2);
+					const steps = [10, 100, 1000];
+					const targetTexts = ['hàng chục', 'hàng trăm', 'hàng nghìn'];
+					const checkTexts = ['hàng đơn vị', 'hàng chục', 'hàng trăm'];
 
-						return makeQ(
-							`Làm tròn số $${num.toLocaleString('vi-VN')}$ đến hàng nghìn ta được số nào?`,
-							`${roundedThousand.toLocaleString('vi-VN')}`,
-							[
-								() => `${distractor1.toLocaleString('vi-VN')}`,
-								() => `${distractor2.toLocaleString('vi-VN')}`,
-								() => `${distractor3.toLocaleString('vi-VN')}`
-							],
-							`<p class="font-bold text-blue-700">Bài giải (Làm tròn số):</p>` +
-							`<p>Chữ số hàng trăm của $${num.toLocaleString('vi-VN')}$ là <b>${hundredDigit}</b>.</p>` +
-							`<p>Vì ${hundredDigit} ${hundredDigit >= 5 ? '$\\ge 5$' : '$< 5$'} nên ta làm tròn ${hundredDigit >= 5 ? 'lên' : 'xuống'}: <b>${roundedThousand.toLocaleString('vi-VN')}</b>.</p>` +
-							`<p><b>Đáp số:</b> ${roundedThousand.toLocaleString('vi-VN')}</p>`
-						);
-					},
+					const step = steps[type];
+					const targetText = targetTexts[type];
+					const checkText = checkTexts[type];
+
+					const num = getRandomInt(100, 98999);
+
+					const floorVal = Math.floor(num / step) * step;
+					const ceilVal = floorVal + step;
+					const roundedVal = Math.round(num / step) * step;
+
+					const checkDigit = Math.floor((num % step) / (step / 10));
+
+					let wrong1, wrong2, wrong3;
+					if (roundedVal === ceilVal) {
+						wrong1 = floorVal;
+						wrong2 = ceilVal + step;
+						wrong3 = Math.max(0, floorVal - step);
+					} else {
+						wrong1 = ceilVal;
+						wrong2 = ceilVal + step;
+						wrong3 = Math.max(0, floorVal - step);
+					}
+
+					// Dùng \\lt trong LaTeX để trình duyệt không bị vỡ HTML
+					const compareSymbol = checkDigit >= 5 ? '$\\ge 5$' : '$\\lt 5$';
+					const actionText = checkDigit >= 5 ? 'lên' : 'xuống';
+
+					return makeQ(
+						`<div>Làm tròn số $${fmt(num)}$ đến ${targetText} ta được số nào?</div>`,
+						`${fmt(roundedVal)}`,
+						[
+							() => `${fmt(wrong1)}`,
+							() => `${fmt(wrong2)}`,
+							() => `${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Làm tròn số):</p>` +
+						`<p>Chữ số ${checkText} của $${fmt(num)}$ là <b>${checkDigit}</b>.</p>` +
+						`<p>Vì ${checkDigit} ${compareSymbol} nên ta làm tròn ${actionText}: <b>${fmt(roundedVal)}</b>.</p>` +
+						`<p><b>Đáp số:</b> ${fmt(roundedVal)}</p>`
+					);
+				},
+				//phân tích số thành Tổng
+				() => {
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					const digitsCount = getRandomInt(3, 5);
+					let numParts = [];
+					let num = 0;
+
+					if (digitsCount === 5) {
+						const d4 = getRandomInt(1, 9), d3 = getRandomInt(1, 9), d2 = getRandomInt(1, 9), d1 = getRandomInt(1, 9), d0 = getRandomInt(1, 9);
+						num = d4 * 10000 + d3 * 1000 + d2 * 100 + d1 * 10 + d0;
+						numParts = [d4 * 10000, d3 * 1000, d2 * 100, d1 * 10, d0];
+					} else if (digitsCount === 4) {
+						const d3 = getRandomInt(1, 9), d2 = getRandomInt(1, 9), d1 = getRandomInt(1, 9), d0 = getRandomInt(1, 9);
+						num = d3 * 1000 + d2 * 100 + d1 * 10 + d0;
+						numParts = [d3 * 1000, d2 * 100, d1 * 10, d0];
+					} else {
+						const d2 = getRandomInt(1, 9), d1 = getRandomInt(1, 9), d0 = getRandomInt(1, 9);
+						num = d2 * 100 + d1 * 10 + d0;
+						numParts = [d2 * 100, d1 * 10, d0];
+					}
+
+					// Đáp án đúng (VD: 5.000 + 900 + 90 + 1)
+					const correctSum = numParts.map(p => fmt(p)).join(' + ');
+
+					// Bẫy 1: Thiếu 1 số 0 ở hàng cao nhất (VD: 500 + 900 + 90 + 1)
+					let wrong1Parts = [...numParts];
+					wrong1Parts[0] = wrong1Parts[0] / 10;
+					const wrong1 = wrong1Parts.map(p => fmt(p)).join(' + ');
+
+					// Bẫy 2: Thiếu 1 số 0 ở hàng trăm (VD: 5.000 + 90 + 90 + 1)
+					let wrong2Parts = [...numParts];
+					const midIdx = numParts.length - 3; // Vị trí hàng trăm
+					wrong2Parts[midIdx] = wrong2Parts[midIdx] / 10;
+					const wrong2 = wrong2Parts.map(p => fmt(p)).join(' + ');
+
+					// Bẫy 3: Thừa 1 số 0 ở hàng trăm (VD: 5.000 + 9.000 + 90 + 1)
+					let wrong3Parts = [...numParts];
+					const hundredIdx = numParts.length - 3; // Vị trí hàng trăm
+					wrong3Parts[hundredIdx] = wrong3Parts[hundredIdx] * 10;
+					const wrong3 = wrong3Parts.map(p => fmt(p)).join(' + ');
+
+					const partsDetailHtml = numParts.map(p => `<b>${fmt(p)}</b>`).join(', ');
+
+					return makeQ(
+						`<div>Số $${fmt(num)}$ được viết thành tổng các hàng là:</div>`,
+						`$${correctSum}$`,
+						[
+							() => `$${wrong1}$`,
+							() => `$${wrong2}$`,
+							() => `$${wrong3}$`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Phân tích số thành tổng các hàng):</p>` +
+						`<p>Số $${fmt(num)}$ gồm: ${partsDetailHtml}.</p>` +
+						`<p>Do đó, $${fmt(num)} = ${correctSum}$.</p>` +
+						`<p><b>Đáp số:</b> $${correctSum}$</p>`
+					);
+				},
 				() => {
 					// 1. Sinh số ngẫu nhiên từ 4 đến 5 chữ số (1.000 đến 95.000)
 					const is5Digits = getRandomInt(0, 1) === 1;
@@ -1096,159 +1509,271 @@ let scratchCtx = null;
 				}
             ],
             g3_multi_div: [
-                () => {
-                    const divisor = getRandomInt(6, 9);
-                    const quotient = getRandomInt(5, 12);
-                    const remainder = getRandomInt(1, divisor - 1);
-                    const dividend = divisor * quotient + remainder;
-                    return makeQ(
-                        `Kết quả của phép chia $${dividend} : ${divisor}$ là:`,
-                        `Thương là ${quotient}, dư ${remainder}`,
-                        [
-                            () => `Thương là ${quotient}, dư ${remainder + 1}`,
-                            () => `Thương là ${quotient + 1}, dư ${remainder}`,
-                            () => `Thương là ${quotient}, không dư`
-                        ],
-                        `<p class="font-bold text-blue-700">Bài giải (Phép chia có dư):</p><p>Ta có: $${dividend} = ${divisor} \\times ${quotient} + ${remainder}$</p><p>Do đó $${dividend} : ${divisor} = ${quotient}$ (dư $${remainder}$).</p><p><b>Đáp số:</b> Thương là ${quotient}, dư ${remainder}.</p>`
-                    );
-                },
-                () => {
-                    const a = getRandomInt(1200, 2400);
-                    const b = getRandomInt(2, 4);
-                    const prod = a * b;
-                    return makeQ(
-                        `Kết quả của phép tính $${a} \\times ${b}$ là:`,
-                        `${prod.toLocaleString('vi-VN')}`,
-                        [
-                            () => `${(prod + 10).toLocaleString('vi-VN')}`,
-                            () => `${(prod - 100).toLocaleString('vi-VN')}`
-                        ],
-                        `<p class="font-bold text-blue-700">Bài giải:</p><p>Đặt tính rồi tính nhân từng hàng từ phải sang trái: $${a} \\times ${b} = ${prod.toLocaleString('vi-VN')}$.</p>`
-                    );
-                }
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Số chia có 1 chữ số (từ 2 đến 9)
+					const divisor = getRandomInt(2, 9);
+
+					// Ngẫu nhiên dạng bài: true -> Phép chia hết | false -> Phép chia có dư
+					const isExact = getRandomInt(0, 1) === 1;
+					const remainder = isExact ? 0 : getRandomInt(1, divisor - 1);
+
+					// Sinh thương sao cho số bị chia có từ 3 đến 5 chữ số (100 đến 99.999)
+					const minQ = Math.ceil(100 / divisor);
+					const maxQ = Math.floor((99999 - remainder) / divisor);
+					const quotient = getRandomInt(minQ, maxQ);
+
+					const dividend = divisor * quotient + remainder;
+
+					if (isExact) {
+						// PHÉP CHIA HẾT
+						const wrong1 = quotient + 1;
+						const wrong3 = quotient + 2;
+						const wrong2 = Math.max(1, quotient - 1);
+						const wrongRem = getRandomInt(1, divisor - 1);
+
+						return makeQ(
+							`Kết quả của phép chia $${fmt(dividend)} : ${divisor}$ là:`,
+							`${fmt(quotient)}`,
+							[
+								() => `${fmt(wrong1)}`,
+								() => `${fmt(wrong2)}`,
+								() => `${fmt(wrong3)}`
+							],
+							`<p class="font-bold text-blue-700">Bài giải (Phép chia hết):</p>` +
+							`<p>Ta có: $${fmt(dividend)} : ${divisor} = ${fmt(quotient)}$</p>` +
+							`<p><b>Đáp số:</b> $${fmt(quotient)}$</p>`
+						);
+					} else {
+						// PHÉP CHIA CÓ DƯ
+						const wrongRem = (remainder + 1 < divisor) ? remainder + 1 : remainder - 1;
+
+						return makeQ(
+							`Kết quả của phép chia $${fmt(dividend)} : ${divisor}$ là:`,
+							`Thương là ${fmt(quotient)}, dư ${remainder}`,
+							[
+								() => `Thương là ${fmt(quotient)}, dư ${wrongRem}`,
+								() => `Thương là ${fmt(quotient + 1)}, dư ${remainder}`,
+								() => `Thương là ${fmt(quotient+2)} (không dư)`
+							],
+							`<p class="font-bold text-blue-700">Bài giải (Phép chia có dư):</p>` +
+							`<p>Ta có: $${fmt(dividend)} = ${divisor} \\times ${fmt(quotient)} + ${remainder}$</p>` +
+							`<p>Do đó $${fmt(dividend)} : ${divisor} = ${fmt(quotient)}$ (dư $${remainder}$).</p>` +
+							`<p><b>Đáp số:</b> Thương là ${fmt(quotient)}, dư $${remainder}$.</p>`
+						);
+					}
+				},
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Thừa số thứ hai có 1 chữ số (từ 2 đến 9)
+					const b = getRandomInt(2, 9);
+
+					// Thừa số thứ nhất có từ 3 đến 5 chữ số sao cho tích prod < 100.000
+					const a = getRandomInt(100, Math.floor(99999 / b));
+					const prod = a * b;
+
+					// Các phương án nhiễu (luôn dương)
+					const wrong1 = prod + 10;
+					const wrong2 = Math.max(1, prod - 100);
+					const wrong3 = prod + 100;
+
+					return makeQ(
+						`Kết quả của phép tính $${fmt(a)} \\times ${b}$ là:`,
+						`${fmt(prod)}`,
+						[
+							() => `${fmt(wrong1)}`,
+							() => `${fmt(wrong2)}`,
+							() => `${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải:</p>` +
+						`<p>Đặt tính rồi tính nhân từng hàng từ phải sang trái:</p>` +
+						`<p>• $${fmt(a)} \\times ${b} = ${fmt(prod)}$</p>` +
+						`<p><b>Đáp số:</b> $${fmt(prod)}$</p>`
+					);
+				}
             ],
             g3_find_x_basic: [
-                () => {
-                    const xVal = getRandomInt(15, 80), a = getRandomInt(10, 50), c = xVal + a;
-                    return makeQ(
-                        `Tìm $x$, biết: $x + ${a} = ${c}$`,
-                        `x = ${xVal}`,
-                        [() => `x = ${xVal + 5}`, () => `x = ${xVal - 5}`, () => `x = ${c + a}`],
-                        `<p class="font-bold text-blue-700">Bài giải (Tìm số hạng chưa biết):</p><p>Muốn tìm số hạng chưa biết, ta lấy tổng trừ đi số hạng đã biết.</p><p>• $x = ${c} - ${a} = ${xVal}$</p><p><b>Đáp số:</b> $x = ${xVal}$</p>`
-                    );
-                },
-                () => {
-                    const xVal = getRandomInt(40, 90), a = getRandomInt(10, 30), c = xVal - a;
-                    return makeQ(
-                        `Tìm $x$, biết: $x - ${a} = ${c}$`,
-                        `x = ${xVal}`,
-                        [() => `x = ${c - a}`, () => `x = ${xVal + 10}`, () => `x = ${xVal - 10}`],
-                        `<p class="font-bold text-blue-700">Bài giải (Tìm số bị trừ):</p><p>Muốn tìm số bị trừ, ta lấy hiệu cộng với số trừ.</p><p>• $x = ${c} + ${a} = ${xVal}$</p><p><b>Đáp số:</b> $x = ${xVal}$</p>`
-                    );
-                },
 				() => {
-					const a = getRandomInt(50, 90), xVal = getRandomInt(10, 30), c = a - xVal;
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12345 -> 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Sinh số ngẫu nhiên từ 3 đến 5 chữ số (từ 100 đến 49.999 để tổng c < 100.000)
+					const xVal = getRandomInt(100, 49999);
+					const a = getRandomInt(100, 49999);
+					const c = xVal + a;
+
 					return makeQ(
-						`Tìm $x$, biết: ${a} - x = ${c}`,
-						`x = ${xVal}`,
+						`Tìm $x$, biết: $x + ${fmt(a)} = ${fmt(c)}$`,
+						`x = ${fmt(xVal)}`,
 						[
-							() => `x = ${a + c}`,     // Đã sửa: Tính ra kết quả (VD: x = 109) thay vì chuỗi 61 + 48
-							() => `x = ${xVal + 10}`, // Bẫy tính sai
-							() => `x = ${xVal - 10}`  // Bẫy tính sai
+							() => `x = ${fmt(xVal + 100)}`,
+							() => `x = ${fmt(xVal - 100)}`,
+							() => `x = ${fmt(c + a)}`
 						],
-						`<p class="font-bold text-blue-700">Bài giải (Tìm số trừ):</p><p>Muốn tìm số trừ, ta lấy số bị trừ trừ đi hiệu.</p><p>• $x = ${a} - ${c} = ${xVal}$</p><p><b>Đáp số:</b> $x = ${xVal}$</p>`
+						`<p class="font-bold text-blue-700">Bài giải (Tìm số hạng chưa biết):</p>` +
+						`<p>Muốn tìm số hạng chưa biết, ta lấy tổng trừ đi số hạng đã biết.</p>` +
+						`<p>• $x = ${fmt(c)} - ${fmt(a)} = ${fmt(xVal)}$</p>` +
+						`<p><b>Đáp số:</b> $x = ${fmt(xVal)}$</p>`
 					);
 				},
-                () => {
-                    const xVal = getRandomInt(6, 12), a = getRandomInt(3, 8), prod = xVal * a;
-                    return makeQ(
-                        `Tìm $x$, biết: $x \\times ${a} = ${prod}$`,
-                        `x = ${xVal}`,
-                        [() => `x = ${xVal + 2}`, () => `x = ${xVal - 1}`],
-                        `<p class="font-bold text-blue-700">Bài giải (Tìm thừa số chưa biết):</p><p>Muốn tìm thừa số chưa biết, lấy tích chia cho thừa số đã biết: $x = ${prod} : ${a} = ${xVal}$.</p>`
-                    );
-                }
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Sinh số xVal ngẫu nhiên từ 3 đến 5 chữ số (1.000 đến 99.999)
+					const xVal = getRandomInt(1000, 99999);
+					// Sinh số trừ 'a' nhỏ hơn xVal để hiệu 'c' luôn dương
+					const a = getRandomInt(100, xVal - 100);
+					const c = xVal - a;
+
+					// Tính toán các phương án nhiễu luôn là số dương
+					const wrong1 = (c > a) ? (c - a) : (xVal + 500);
+					const wrong2 = xVal + 100;
+					const wrong3 = Math.max(100, xVal - 100);
+
+					return makeQ(
+						`Tìm $x$, biết: $x - ${fmt(a)} = ${fmt(c)}$`,
+						`x = ${fmt(xVal)}`,
+						[
+							() => `x = ${fmt(wrong1)}`,
+							() => `x = ${fmt(wrong2)}`,
+							() => `x = ${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Tìm số bị trừ):</p>` +
+						`<p>Muốn tìm số bị trừ, ta lấy hiệu cộng với số trừ.</p>` +
+						`<p>• $x = ${fmt(c)} + ${fmt(a)} = ${fmt(xVal)}$</p>` +
+						`<p><b>Đáp số:</b> $x = ${fmt(xVal)}$</p>`
+					);
+				},
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Sinh số bị trừ 'a' ngẫu nhiên từ 3 đến 5 chữ số (1.000 đến 99.999)
+					const a = getRandomInt(1000, 99999);
+					// Sinh xVal nhỏ hơn 'a' để hiệu 'c' luôn dương
+					const xVal = getRandomInt(100, a - 100);
+					const c = a - xVal;
+
+					// Các phương án nhiễu (luôn dương)
+					const wrong1 = a + c; // Bẫy cộng nhầm thay vì trừ
+					const wrong2 = xVal + 100;
+					const wrong3 = Math.max(100, xVal - 100);
+
+					return makeQ(
+						`Tìm $x$, biết: $${fmt(a)} - x = ${fmt(c)}$`,
+						`x = ${fmt(xVal)}`,
+						[
+							() => `x = ${fmt(wrong1)}`,
+							() => `x = ${fmt(wrong2)}`,
+							() => `x = ${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Tìm số trừ):</p>` +
+						`<p>Muốn tìm số trừ, ta lấy số bị trừ trừ đi hiệu.</p>` +
+						`<p>• $x = ${fmt(a)} - ${fmt(c)} = ${fmt(xVal)}$</p>` +
+						`<p><b>Đáp số:</b> $x = ${fmt(xVal)}$</p>`
+					);
+				},
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Thừa số đã biết a nhỏ hơn 10 (từ 2 đến 9)
+					const a = getRandomInt(2, 9);
+					// xVal từ 3 đến 5 chữ số sao cho tích prod < 100.000 (100 đến 11.000)
+					const xVal = getRandomInt(100, Math.floor(99999 / a));
+					const prod = xVal * a;
+
+					// Các phương án nhiễu
+					const wrong1 = xVal + 10;
+					const wrong2 = Math.max(1, xVal - 10);
+					const wrong3 = prod + a; // Bẫy tính nhầm lấy tích cộng thừa số
+
+					return makeQ(
+						`Tìm $x$, biết: $x \\times ${a} = ${fmt(prod)}$`,
+						`x = ${fmt(xVal)}`,
+						[
+							() => `x = ${fmt(wrong1)}`,
+							() => `x = ${fmt(wrong2)}`,
+							() => `x = ${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Tìm thừa số chưa biết):</p>` +
+						`<p>Muốn tìm thừa số chưa biết, ta lấy tích chia cho thừa số đã biết.</p>` +
+						`<p>• $x = ${fmt(prod)} : ${a} = ${fmt(xVal)}$</p>` +
+						`<p><b>Đáp số:</b> $x = ${fmt(xVal)}$</p>`
+					);
+				},
+				//tìm số bị chia ($x : a = b$)
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Số chia 'a' nhỏ hơn 10 (từ 2 đến 9)
+					const a = getRandomInt(2, 9);
+					// Thương 'b' ngẫu nhiên từ 3 đến 5 chữ số sao cho xVal = b * a < 100.000
+					const b = getRandomInt(100, Math.floor(99999 / a));
+					const xVal = b * a;
+
+					// Các phương án nhiễu (luôn dương)
+					const wrong1 = b * (a + 1);
+					const wrong2 = xVal + 10;
+					const wrong3 = Math.max(1, xVal - 10);
+
+					return makeQ(
+						`Tìm $x$, biết: $x : ${a} = ${fmt(b)}$`,
+						`x = ${fmt(xVal)}`,
+						[
+							() => `x = ${fmt(wrong1)}`,
+							() => `x = ${fmt(wrong2)}`,
+							() => `x = ${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Tìm số bị chia):</p>` +
+						`<p>Muốn tìm số bị chia, ta lấy thương nhân với số chia.</p>` +
+						`<p>• $x = ${fmt(b)} \\times ${a} = ${fmt(xVal)}$</p>` +
+						`<p><b>Đáp số:</b> $x = ${fmt(xVal)}$</p>`
+					);
+				},
+				// Tìm số chia ($a : x = b$)
+				() => {
+					// Hàm thêm dấu phân tách hàng nghìn (ví dụ: 12.345)
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Thương 'b' nhỏ hơn 10 (từ 2 đến 9)
+					const b = getRandomInt(2, 9);
+					// Số chia xVal ngẫu nhiên từ 3 đến 5 chữ số sao cho a = xVal * b < 100.000
+					const xVal = getRandomInt(100, Math.floor(99999 / b));
+					const a = xVal * b;
+
+					// Các phương án nhiễu (luôn dương)
+					const wrong1 = a * b; // Bẫy tính nhầm lấy số bị chia nhân với thương
+					const wrong2 = xVal + 10;
+					const wrong3 = Math.max(1, xVal - 10);
+
+					return makeQ(
+						`Tìm $x$, biết: $${fmt(a)} : x = ${b}$`,
+						`x = ${fmt(xVal)}`,
+						[
+							() => `x = ${fmt(wrong1)}`,
+							() => `x = ${fmt(wrong2)}`,
+							() => `x = ${fmt(wrong3)}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Tìm số chia):</p>` +
+						`<p>Muốn tìm số chia, ta lấy số bị chia chia cho thương.</p>` +
+						`<p>• $x = ${fmt(a)} : ${b} = ${fmt(xVal)}$</p>` +
+						`<p><b>Đáp số:</b> $x = ${fmt(xVal)}$</p>`
+					);
+				}
             ],
             g3_eval_expr: [
-                () => {
-                    const c = getRandomInt(3, 7), divRes = getRandomInt(5, 12), sum = divRes * c, a = getRandomInt(5, sum - 5), b = sum - a;
-                    return makeQ(
-                        `Tính giá trị của biểu thức: $(${a} + ${b}) : ${c}$`,
-                        `${divRes}`,
-                        [() => `${Math.floor((a + b) / c) + 3}`, () => `${divRes - 2}`, () => `${sum}`],
-                        `<p class="font-bold text-blue-700">Bài giải (Biểu thức có dấu ngoặc):</p><p>Thực hiện trong ngoặc trước, ngoài ngoặc sau: $(${a} + ${b}) : ${c} = ${sum} : ${c} = ${divRes}$</p><p><b>Đáp số:</b> $${divRes}$</p>`
-                    );
-                },
+				// Hàm sinh câu hỏi ngẫu nhiên 1 trong 46 dạng bài
 				() => {
-					const a = getRandomInt(10, 50), b = getRandomInt(10, 50), c = getRandomInt(10, 50);
-					const res = a + b + c;
-					return makeQ(
-						`Giá trị của biểu thức $${a} + ${b} + ${c}$ là:`,
-						`${res}`,
-						[() => `${a + b - c}`, () => `${res + 10}`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Thực hiện lần lượt từ trái sang phải: $${a} + ${b} + ${c} = ${a + b} + ${c} = ${res}$.</p>`
-					);
-				},
-				() => {
-					const a = getRandomInt(40, 90), b = getRandomInt(10, 30), c = getRandomInt(5, 20);
-					const res = a - b + c;
-					return makeQ(
-						`Giá trị của biểu thức $${a} - ${b} + ${c}$ là:`,
-						`${res}`,
-						[() => `${a - (b + c)}`, () => `${res - 10}`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Biểu thức chỉ có phép cộng và trừ, thực hiện từ trái sang phải: $${a} - ${b} + ${c} = ${a - b} + ${c} = ${res}$.</p>`
-					);
-				},
-				() => {
-					const a = getRandomInt(50, 90), b = getRandomInt(10, 20), c = getRandomInt(5, 15);
-					const res = a - b - c;
-					return makeQ(
-						`Giá trị của biểu thức $${a} - ${b} - ${c}$ là:`,
-						`${res}`,
-						[() => `${a - b + c}`, () => `${a - (b - c)}`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Thực hiện lần lượt từ trái sang phải: $${a} - ${b} - ${c} = ${a - b} - ${c} = ${res}$.</p>`
-					);
-				},
-				() => {
-					const a = getRandomInt(4, 9), b = getRandomInt(5, 12), c = getRandomInt(10, 30);
-					const res = a * b + c;
-					return makeQ(
-						`Giá trị của biểu thức $${a} \\times ${b} + ${c}$ là:`,
-						`${res}`,
-						[() => `${a * (b + c)}`, () => `${res - 5}`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Thực hiện phép nhân trước, phép cộng sau: $${a} \\times ${b} + ${c} = ${a * b} + ${c} = ${res}$.</p>`
-					);
-				},
-				() => {
-					const a = getRandomInt(5, 9), b = getRandomInt(6, 10), c = getRandomInt(5, 20);
-					const res = a * b - c;
-					return makeQ(
-						`Giá trị của biểu thức $${a} \\times ${b} - ${c}$ là:`,
-						`${res}`,
-						[() => `${a * (b - c)}`, () => `${res + 10}`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Thực hiện phép nhân trước, phép trừ sau: $${a} \\times ${b} - ${c} = ${a * b} - ${c} = ${res}$.</p>`
-					);
-				},
-				() => {
-					const a = getRandomInt(20, 50), b = getRandomInt(15, 40), c = getRandomInt(10, 30);
-					const res = a + b - c;
-					return makeQ(
-						`Giá trị của biểu thức $${a} + ${b} - ${c}$ là:`,
-						`${res}`,
-						[() => `${a + (b + c)}`, () => `${res - 10}`],
-						`<p class="font-bold text-blue-700">Bài giải:</p><p>Thực hiện lần lượt từ trái sang phải: $${a} + ${b} - ${c} = ${a + b} - ${c} = ${res}$.</p>`
-					);
-				},
-                () => {
-                    const a = getRandomInt(20, 50), b = getRandomInt(4, 9), c = getRandomInt(3, 6);
-                    const res = a + b * c;
-                    return makeQ(
-                        `Giá trị của biểu thức $${a} + ${b} \\times ${c}$ là:`,
-                        `${res}`,
-                        [() => `${(a + b) * c}`, () => `${res - 5}`],
-                        `<p class="font-bold text-blue-700">Bài giải:</p><p>Thực hiện nhân trước, cộng sau: $${a} + ${b} \\times ${c} = ${a} + ${b * c} = ${res}$.</p>`
-                    );
-                }
+					const randomPattern = ALL_EXPRESSION_PATTERNS[getRandomInt(0, ALL_EXPRESSION_PATTERNS.length - 1)];
+					return makeExpressionQuestion(randomPattern);
+				}
             ],
             g3_geometry: [
 				//Tính chu vi hình vuông
@@ -1511,100 +2036,302 @@ let scratchCtx = null;
 				}
             ],
 			g3_unit_reduction: [
-                () => {
-                    const packs = getRandomInt(3, 6), totalItems = packs * getRandomInt(5, 9), unitPrice = totalItems / packs;
-                    const askPacks = getRandomInt(2, 8), ans = unitPrice * askPacks;
-                    return makeQ(
-                        `Có $${totalItems}$ cái kẹo được chia đều vào $${packs}$ túi. Hỏi $${askPacks}$ túi như thế có tất cả bao nhiêu cái kẹo?`,
-                        `${ans} cái`,
-                        [() => `${ans + unitPrice} cái`, () => `${ans - unitPrice} cái`, () => `${totalItems * askPacks} cái`],
-                        `<p class="font-bold text-blue-700">Bài giải (Rút về đơn vị):</p><p>• 1 túi có số kẹo là: $${totalItems} : ${packs} = ${unitPrice}$ (cái)</p><p>• $${askPacks}$ túi có số kẹo là: $${unitPrice} \\times ${askPacks} = ${ans}$ (cái)</p><p><b>Đáp số:</b> ${ans} cái.</p>`
-                    );
-                },
 				() => {
+					// Danh sách 10 ngữ cảnh thực tế gần gũi cho bài toán Rút về đơn vị
+					const contexts = [
+						{ item: "cái kẹo", container: "túi", unit: "cái", action: "chia đều vào" },
+						{ item: "quyển vở", container: "hộp", unit: "quyển", action: "xếp đều vào" },
+						{ item: "bông hoa", container: "bình", unit: "bông", action: "cắm đều vào" },
+						{ item: "quả cam", container: "đĩa", unit: "quả", action: "bày đều lên" },
+						{ item: "lít dầu ăn", container: "can", unit: "lít", action: "rót đều vào" },
+						{ item: "ki-lô-gam gạo", container: "bao", unit: "kg", action: "đựng đều trong" },
+						{ item: "cây bút màu", container: "hộp", unit: "cây", action: "đựng đều trong" },
+						{ item: "cái bánh", container: "hộp", unit: "cái", action: "xếp đều vào" },
+						{ item: "cuốn sách", container: "ngăn kệ", unit: "cuốn", action: "xếp đều lên" },
+						{ item: "lít nước nướng", container: "chai", unit: "lít", action: "rót đều vào" }
+					];
+
+					// Chọn ngẫu nhiên 1 ngữ cảnh
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					const packs = getRandomInt(3, 7);
+					const perPack = getRandomInt(4, 12); // Giá trị 1 đơn vị
+					const totalItems = packs * perPack;
+
+					// Đảm bảo số lượng hỏi khác số lượng ban đầu
+					let askPacks = getRandomInt(2, 9);
+					while (askPacks === packs) {
+						askPacks = getRandomInt(2, 9);
+					}
+
+					const ans = perPack * askPacks;
+
+					// Bẫy nhiễu phổ biến ở học sinh
+					const wrong1 = ans + perPack; // Cộng/trừ thừa 1 đơn vị
+					const wrong2 = Math.max(1, ans - perPack);
+					const wrong3 = totalItems * askPacks; // Quên bước rút về đơn vị (lấy tổng nhân thẳng)
+
+					return makeQ(
+						`<div>Có $${totalItems}$ ${ctx.item} được ${ctx.action} $${packs}$ ${ctx.container}. Hỏi $${askPacks}$ ${ctx.container} như thế có tất cả bao nhiêu ${ctx.item}?</div>`,
+						`${ans} ${ctx.unit}`,
+						[
+							() => `${wrong1} ${ctx.unit}`,
+							() => `${wrong2} ${ctx.unit}`,
+							() => `${wrong3} ${ctx.unit}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải (Rút về đơn vị):</p>` +
+						`<p>• 1 ${ctx.container} có số ${ctx.item} là:</p>` +
+						`<p>$${totalItems} : ${packs} = ${perPack}$ (${ctx.unit})</p>` +
+						`<p>• $${askPacks}$ ${ctx.container} có số ${ctx.item} là:</p>` +
+						`<p>$${perPack} \\times ${askPacks} = ${ans}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> ${ans} ${ctx.unit}.</p>`
+					);
+				},
+				() => {
+					// 10 ngữ cảnh thực tế đa dạng cho bài toán Rút về đơn vị (So sánh phần nhiều hơn)
+					const contexts = [
+						{ name: "gạo", item: "ki-lô-gam gạo", container: "bao", unit: "kg", action: "chia đều vào" },
+						{ name: "dầu ăn", item: "lít dầu ăn", container: "can", unit: "lít", action: "rót đều vào" },
+						{ name: "vở", item: "quyển vở", container: "thùng", unit: "quyển", action: "xếp đều vào" },
+						{ name: "bánh", item: "cái bánh", container: "hộp", unit: "cái", action: "đóng đều vào" },
+						{ name: "mật ong", item: "lít mật ong", container: "chai", unit: "lít", action: "chia đều vào" },
+						{ name: "bi", item: "viên bi", container: "túi", unit: "viên", action: "chia đều vào" },
+						{ name: "hoa", item: "bông hoa", container: "lọ", unit: "bông", action: "cắm đều vào" },
+						{ name: "cam", item: "quả cam", container: "rổ", unit: "quả", action: "xếp đều vào" },
+						{ name: "sách", item: "cuốn sách", container: "ngăn kệ", unit: "cuốn", action: "xếp đều lên" },
+						{ name: "đường", item: "ki-lô-gam đường", container: "túi", unit: "kg", action: "đóng đều vào" }
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
 					const unitPrice = getRandomInt(6, 12);
-					const packs1 = getRandomInt(3, 5), total1 = packs1 * unitPrice;
-					const packs2 = getRandomInt(6, 9), total2 = packs2 * unitPrice;
+					const packs1 = getRandomInt(3, 5);
+					const total1 = packs1 * unitPrice;
+
+					const packs2 = getRandomInt(6, 9);
+					const total2 = packs2 * unitPrice;
+
 					const diffPacks = packs2 - packs1;
 					const ans = diffPacks * unitPrice;
 
-					return makeQ(
-						`Có $${total1}$ kg gạo được chia đều vào $${packs1}$ bao. Hỏi $${packs2}$ bao gạo như thế nhiều hơn $${packs1}$ bao ban đầu bao nhiêu ki-lô-gam gạo?`,
-						`${ans} kg`,
-						[() => `${total2} kg`, () => `${ans + unitPrice} kg`, () => `${ans - unitPrice} kg`],
-						`<p class="font-bold text-blue-700">Bài giải:</p>` +
-						`<p>• Mỗi bao chứa số ki-lô-gam gạo là: $${total1} : ${packs1} = ${unitPrice}$ (kg)</p>` +
-						`<p>• $${packs2}$ bao chứa số ki-lô-gam gạo là: $${unitPrice} \\times ${packs2} = ${total2}$ (kg)</p>` +
-						`<p>• $${packs2}$ bao nhiều hơn $${packs1}$ bao số ki-lô-gam gạo là: $${total2} - ${total1} = ${ans}$ (kg)</p>` +
-						`<p><b>Đáp số:</b> ${ans} kg.</p>`
-					);
-				},
-				() => {
-					const unitPrice = getRandomInt(4, 9) * 1000; // Giá mỗi quyển vở (tròn nghìn)
-					const n1 = getRandomInt(2, 4), totalCost1 = n1 * unitPrice;
-					const n2 = getRandomInt(5, 8), cost2 = n2 * unitPrice;
-					const pay = (Math.ceil((cost2 + 5000) / 10000)) * 10000; // Số tiền khách đưa (tròn chục nghìn lớn hơn tổng tiền)
-					const change = pay - cost2;
+					// Các đáp án nhiễu logic
+					const wrong1 = total2; // Học sinh nhầm sang tính tổng của nhóm thứ hai
+					const wrong2 = ans + unitPrice; // Tăng thừa 1 đơn vị
+					const wrong3 = Math.max(1, ans - unitPrice); // Giảm thiếu 1 đơn vị
 
 					return makeQ(
-						`Mua $${n1}$ quyển vở hết $${totalCost1.toLocaleString('vi-VN')}$ đồng. Bạn Nam mua $${n2}$ quyển vở như thế và đưa cô bán hàng $${pay.toLocaleString('vi-VN')}$ đồng. Hỏi cô bán hàng phải trả lại Nam bao nhiêu tiền?`,
-						`${change.toLocaleString('vi-VN')} đồng`,
-						[() => `${cost2.toLocaleString('vi-VN')} đồng`, () => `${(change + 5000).toLocaleString('vi-VN')} đồng`, () => `${(pay - totalCost1).toLocaleString('vi-VN')} đồng`],
+						`<div>Có $${total1}$ ${ctx.unit} ${ctx.name} được ${ctx.action} $${packs1}$ ${ctx.container}. Hỏi $${packs2}$ ${ctx.container} ${ctx.name} như thế nhiều hơn $${packs1}$ ${ctx.container} ban đầu bao nhiêu ${ctx.item}?</div>`,
+						`${ans} ${ctx.unit}`,
+						[
+							() => `${wrong1} ${ctx.unit}`,
+							() => `${wrong2} ${ctx.unit}`,
+							() => `${wrong3} ${ctx.unit}`
+						],
 						`<p class="font-bold text-blue-700">Bài giải:</p>` +
-						`<p>• Giá tiền 1 quyển vở là: $${totalCost1.toLocaleString('vi-VN')} : ${n1} = ${unitPrice.toLocaleString('vi-VN')}$ (đồng)</p>` +
-						`<p>• Số tiền mua $${n2}$ quyển vở là: $${unitPrice.toLocaleString('vi-VN')} \\times ${n2} = ${cost2.toLocaleString('vi-VN')}$ (đồng)</p>` +
-						`<p>• Cô bán hàng phải trả lại Nam số tiền là: $${pay.toLocaleString('vi-VN')} - ${cost2.toLocaleString('vi-VN')} = ${change.toLocaleString('vi-VN')}$ (đồng)</p>` +
-						`<p><b>Đáp số:</b> ${change.toLocaleString('vi-VN')} đồng.</p>`
+						`<p>• Mỗi ${ctx.container} chứa số ${ctx.item} là:</p>` +
+						`<p>$${total1} : ${packs1} = ${unitPrice}$ (${ctx.unit})</p>` +
+						`<p>• $${packs2}$ ${ctx.container} chứa số ${ctx.item} là:</p>` +
+						`<p>$${unitPrice} \\times ${packs2} = ${total2}$ (${ctx.unit})</p>` +
+						`<p>• $${packs2}$ ${ctx.container} nhiều hơn $${packs1}$ ${ctx.container} số ${ctx.item} là:</p>` +
+						`<p>$${total2} - ${total1} = ${ans}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> ${ans} ${ctx.unit}.</p>`
 					);
 				},
 				() => {
-					const unit = getRandomInt(8, 15); // Số kg mỗi thùng
-					const c1 = getRandomInt(3, 5), total1 = c1 * unit; // Ban đầu
-					const c2 = getRandomInt(2, 4); // Mua thêm
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Mảng 10 ngữ cảnh mua sắm thực tế gần gũi với học sinh
+					const contexts = [
+						{ item: "quyển vở", unit: "quyển", buyer: "Bạn Nam" },
+						{ item: "cây bút chì", unit: "cây", buyer: "Bạn Mai" },
+						{ item: "cục tẩy", unit: "cục", buyer: "Bạn Minh" },
+						{ item: "thước kẻ", unit: "cái", buyer: "Bạn Hoa" },
+						{ item: "que kem", unit: "que", buyer: "Bạn Đức" },
+						{ item: "hộp sữa", unit: "hộp", buyer: "Bạn An" },
+						{ item: "quả táo", unit: "quả", buyer: "Bạn Linh" },
+						{ item: "chiếc bánh bao", unit: "chiếc", buyer: "Bạn Huy" },
+						{ item: "cuốn truyện tranh", unit: "cuốn", buyer: "Bạn Bảo" },
+						{ item: "hộp màu vẽ", unit: "hộp", buyer: "Bạn Trang" }
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					const unitPrice = getRandomInt(4, 9) * 1000; // Giá từ 4.000đ đến 9.000đ
+					const n1 = getRandomInt(2, 4);
+					const totalCost1 = n1 * unitPrice;
+
+					const n2 = getRandomInt(5, 8);
+					const cost2 = n2 * unitPrice;
+
+					// Số tiền đưa cô bán hàng (tròn chục nghìn)
+					const pay = Math.ceil((cost2 + 5000) / 10000) * 10000;
+					const change = pay - cost2;
+
+					// Các đáp án nhiễu logic
+					const wrong1 = cost2; // Quên tính tiền thừa, dừng ở tổng tiền mua
+					const wrong2 = change + 5000; // Sai lệch tiền thừa
+					const wrong3 = pay - totalCost1; // Lấy tiền đưa trừ nhầm lượt mua đầu
+
+					return makeQ(
+						`<div>Mua $${n1}$ ${ctx.item} hết $${fmt(totalCost1)}$ đồng. ${ctx.buyer} mua $${n2}$ ${ctx.item} như thế và đưa cô bán hàng $${fmt(pay)}$ đồng. Hỏi cô bán hàng phải trả lại ${ctx.buyer} bao nhiêu tiền?</div>`,
+						`${fmt(change)} đồng`,
+						[
+							() => `${fmt(wrong1)} đồng`,
+							() => `${fmt(wrong2)} đồng`,
+							() => `${fmt(wrong3)} đồng`
+						],
+						`<p class="font-bold text-blue-700">Bài giải:</p>` +
+						`<p>• Giá tiền 1 ${ctx.item} là:</p>` +
+						`<p>$${fmt(totalCost1)} : ${n1} = ${fmt(unitPrice)}$ (đồng)</p>` +
+						`<p>• Số tiền mua $${n2}$ ${ctx.item} là:</p>` +
+						`<p>$${fmt(unitPrice)} \\times ${n2} = ${fmt(cost2)}$ (đồng)</p>` +
+						`<p>• Cô bán hàng phải trả lại ${ctx.buyer} số tiền là:</p>` +
+						`<p>$${fmt(pay)} - ${fmt(cost2)} = ${fmt(change)}$ (đồng)</p>` +
+						`<p><b>Đáp số:</b> ${fmt(change)} đồng.</p>`
+					);
+				},
+				() => {
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Mảng 10 ngữ cảnh thực tế đa dạng (Cửa hàng, tiệm bánh, trang trại, thư viện,...)
+					const contexts = [
+						{ place: "Cửa hàng", item: "cam", fullItem: "ki-lô-gam cam", container: "thùng", unit: "kg", action: "nhập thêm" },
+						{ place: "Nhà kho", item: "gạo", fullItem: "ki-lô-gam gạo", container: "bao", unit: "kg", action: "nhập thêm" },
+						{ place: "Siêu thị", item: "dầu ăn", fullItem: "lít dầu ăn", container: "can", unit: "lít", action: "nhập thêm" },
+						{ place: "Tiệm bánh", item: "bánh quy", fullItem: "cái bánh quy", container: "hộp", unit: "cái", action: "nướng thêm" },
+						{ place: "Cửa hàng sách", item: "sách", fullItem: "cuốn sách", container: "ngăn kệ", unit: "cuốn", action: "xếp thêm" },
+						{ place: "Trang trại", item: "trứng gà", fullItem: "quả trứng gà", container: "khay", unit: "quả", action: "thu hoạch thêm" },
+						{ place: "Cửa hàng hoa", item: "hoa hồng", fullItem: "bông hoa hồng", container: "lọ", unit: "bông", action: "cắm thêm" },
+						{ place: "Cửa hàng tạp hóa", item: "kẹo", fullItem: "viên kẹo", container: "túi", unit: "viên", action: "nhập thêm" },
+						{ place: "Vườn ươm", item: "cây giống", fullItem: "cây giống", container: "chậu", unit: "cây", action: "ươm thêm" },
+						{ place: "Thư viện", item: "truyện tranh", fullItem: "cuốn truyện tranh", container: "thùng", unit: "cuốn", action: "nhận thêm" }
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					const unit = getRandomInt(8, 15); // Số lượng trong 1 container
+					const c1 = getRandomInt(3, 5);
+					const total1 = c1 * unit;
+
+					const c2 = getRandomInt(2, 4); // Số container nhập/thêm
 					const totalCrates = c1 + c2;
 					const ans = totalCrates * unit;
 
-					return makeQ(
-						`Cửa hàng có $${total1}$ kg cam chia đều vào $${c1}$ thùng. Hôm nay cửa hàng nhập thêm $${c2}$ thùng cam như thế nữa. Hỏi cửa hàng có tất cả bao nhiêu ki-lô-gam cam?`,
-						`${ans} kg`,
-						[() => `${c2 * unit} kg`, () => `${ans + unit} kg`, () => `${total1 + c2} kg`],
-						`<p class="font-bold text-blue-700">Bài giải:</p>` +
-						`<p><b>Cách 1:</b></p>` +
-						`<p>• Mỗi thùng chứa số kg cam là: $${total1} : ${c1} = ${unit}$ (kg)</p>` +
-						`<p>• Tổng số thùng cam cửa hàng có là: $${c1} + ${c2} = ${totalCrates}$ (thùng)</p>` +
-						`<p>• Cửa hàng có tất cả số kg cam là: $${unit} \\times ${totalCrates} = ${ans}$ (kg)</p>` +
-						`<p><b>Đáp số:</b> ${ans} kg.</p>`
-					);
-				},
-				() => {
-					const rate = getRandomInt(15, 30); // Số bộ quần áo mỗi giờ
-					const h1 = getRandomInt(2, 4), prod1 = h1 * rate;
-					const h2 = getRandomInt(5, 8), ans = h2 * rate;
+					// Các đáp án bẫy nhiễu
+					const wrong1 = c2 * unit; // Chỉ tính phần mới nhập thêm
+					const wrong2 = ans + unit; // Tính thừa 1 đơn vị
+					const wrong3 = total1 + c2; // Lấy tổng cũ cộng nhầm với số lượng container mới
 
 					return makeQ(
-						`Một xưởng may trong $${h1}$ giờ đầu may được $${prod1}$ bộ quần áo. Hỏi với năng suất như thế, trong $${h2}$ giờ tiếp theo xưởng đó may được bao nhiêu bộ quần áo?`,
-						`${ans} bộ`,
-						[() => `${ans + rate} bộ`, () => `${ans - rate} bộ`, () => `${prod1 * h2} bộ`],
+						`<div>${ctx.place} có $${fmt(total1)}$ ${ctx.unit} ${ctx.item} chia đều vào $${c1}$ ${ctx.container}. Hôm nay ${ctx.place.toLowerCase()} ${ctx.action} $${c2}$ ${ctx.container} ${ctx.item} như thế nữa. Hỏi ${ctx.place.toLowerCase()} có tất cả bao nhiêu ${ctx.fullItem}?</div>`,
+						`${fmt(ans)} ${ctx.unit}`,
+						[
+							() => `${fmt(wrong1)} ${ctx.unit}`,
+							() => `${fmt(wrong2)} ${ctx.unit}`,
+							() => `${fmt(wrong3)} ${ctx.unit}`
+						],
 						`<p class="font-bold text-blue-700">Bài giải:</p>` +
-						`<p>• Trong 1 giờ xưởng may được số bộ quần áo là: $${prod1} : ${h1} = ${rate}$ (bộ)</p>` +
-						`<p>• Trong $${h2}$ giờ xưởng may được số bộ quần áo là: $${rate} \\times ${h2} = ${ans}$ (bộ)</p>` +
-						`<p><b>Đáp số:</b> ${ans} bộ.</p>`
+						`<p>• Mỗi ${ctx.container} chứa số ${ctx.fullItem} là:</p>` +
+						`<p>$${fmt(total1)} : ${c1} = ${unit}$ (${ctx.unit})</p>` +
+						`<p>• Tổng số ${ctx.container} ${ctx.item} ${ctx.place.toLowerCase()} có là:</p>` +
+						`<p>$${c1} + ${c2} = ${totalCrates}$ (${ctx.container})</p>` +
+						`<p>• ${ctx.place} có tất cả số ${ctx.fullItem} là:</p>` +
+						`<p>$${unit} \\times ${totalCrates} = ${fmt(ans)}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> ${fmt(ans)} ${ctx.unit}.</p>`
 					);
 				},
 				() => {
-					const itemsPerPack = getRandomInt(5, 9), packs = getRandomInt(3, 6);
-					const totalItems = packs * itemsPerPack;
-					const askPacks = getRandomInt(7, 12); // Số túi cần tìm ở vế 2
-					const askItems = askPacks * itemsPerPack; // Tổng số kẹo đã biết ở vế 2
-					
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Mảng 10 ngữ cảnh năng suất lao động thực tế
+					const contexts = [
+						{ subject: "Một xưởng may", action: "may được", item: "bộ quần áo", unit: "bộ", timeUnit: "giờ" },
+						{ subject: "Một tiệm bánh", action: "nướng được", item: "cái bánh quy", unit: "cái", timeUnit: "giờ" },
+						{ subject: "Một xưởng mộc", action: "đóng được", item: "chiếc ghế gỗ", unit: "chiếc", timeUnit: "giờ" },
+						{ subject: "Một máy in công nghiệp", action: "in được", item: "trang sách", unit: "trang", timeUnit: "phút" },
+						{ subject: "Một đội công nhân", action: "lát được", item: "mét đường", unit: "m", timeUnit: "giờ" },
+						{ subject: "Một tổ thợ sơn", action: "sơn được", item: "mét vuông tường", unit: "m²", timeUnit: "giờ" },
+						{ subject: "Một nhà máy", action: "lắp ráp được", item: "chiếc xe đạp", unit: "chiếc", timeUnit: "giờ" },
+						{ subject: "Một xưởng gốm", action: "nặn được", item: "cái bình hoa", unit: "cái", timeUnit: "giờ" },
+						{ subject: "Một đội thu hoạch", action: "hái được", item: "giỏ cam", unit: "giỏ", timeUnit: "giờ" },
+						{ subject: "Một tổ thợ đan", action: "đan được", item: "chiếc nón lá", unit: "chiếc", timeUnit: "ngày" }
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					const rate = getRandomInt(15, 30); // Năng suất trong 1 đơn vị thời gian
+					const h1 = getRandomInt(2, 4);
+					const prod1 = h1 * rate;
+
+					const h2 = getRandomInt(5, 8);
+					const ans = h2 * rate;
+
+					// Các đáp án bẫy nhiễu
+					const wrong1 = ans + rate; // Cộng thừa 1 đơn vị thời gian
+					const wrong2 = Math.max(1, ans - rate); // Trừ thiếu 1 đơn vị thời gian
+					const wrong3 = prod1 * h2; // Quên rút về đơn vị, lấy tổng sản lượng ban đầu nhân thẳng
+
 					return makeQ(
-						`Có $${totalItems}$ cái kẹo được chia đều vào $${packs}$ túi. Hỏi có $${askItems}$ cái kẹo thì chia đều vào được bao nhiêu túi như thế?`,
-						`${askPacks} túi`,
-						[() => `${askPacks + 2} túi`, () => `${askPacks - 1} túi`, () => `${Math.floor(askItems / packs)} túi`],
+						`<div>${ctx.subject} trong $${h1}$ ${ctx.timeUnit} đầu ${ctx.action} $${fmt(prod1)}$ ${ctx.item}. Hỏi với năng suất như thế, trong $${h2}$ ${ctx.timeUnit} tiếp theo ${ctx.subject.toLowerCase()} ${ctx.action} bao nhiêu ${ctx.item}?</div>`,
+						`${fmt(ans)} ${ctx.unit}`,
+						[
+							() => `${fmt(wrong1)} ${ctx.unit}`,
+							() => `${fmt(wrong2)} ${ctx.unit}`,
+							() => `${fmt(wrong3)} ${ctx.unit}`
+						],
 						`<p class="font-bold text-blue-700">Bài giải:</p>` +
-						`<p>• Mỗi túi đựng số kẹo là: $${totalItems} : ${packs} = ${itemsPerPack}$ (cái)</p>` +
-						`<p>• $${askItems}$ cái kẹo thì chia được số túi là: $${askItems} : ${itemsPerPack} = ${askPacks}$ (túi)</p>` +
-						`<p><b>Đáp số:</b> ${askPacks} túi.</p>`
+						`<p>• Trong 1 ${ctx.timeUnit} ${ctx.subject.toLowerCase()} ${ctx.action} số ${ctx.item} là:</p>` +
+						`<p>$${fmt(prod1)} : ${h1} = ${rate}$ (${ctx.unit})</p>` +
+						`<p>• Trong $${h2}$ ${ctx.timeUnit} ${ctx.subject.toLowerCase()} ${ctx.action} số ${ctx.item} là:</p>` +
+						`<p>$${rate} \\times ${h2} = ${fmt(ans)}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> ${fmt(ans)} ${ctx.unit}.</p>`
+					);
+				},
+				() => {
+					const fmt = (n) => n.toLocaleString('vi-VN');
+
+					// Mảng 10 ngữ cảnh thực tế dạng Rút về đơn vị (Tìm số lượng vật chứa)
+					const contexts = [
+						{ item: "cái kẹo", container: "túi", unit: "túi", action: "chia đều vào" },
+						{ item: "cái bánh quy", container: "hộp", unit: "hộp", action: "xếp đều vào" },
+						{ item: "quả cam", container: "rổ", unit: "rổ", action: "chia đều vào" },
+						{ item: "cây bút chì", container: "hộp", unit: "hộp", action: "xếp đều vào" },
+						{ item: "quyển vở", container: "thùng", unit: "thùng", action: "đóng đều vào" },
+						{ item: "bông hoa", container: "lọ", unit: "lọ", action: "cắm đều vào" },
+						{ item: "quả táo", container: "túi", unit: "túi", action: "đóng đều vào" },
+						{ item: "lít nước mắm", container: "chai", unit: "chai", action: "rót đều vào" },
+						{ item: "cuốn sách", container: "ngăn kệ", unit: "ngăn kệ", action: "xếp đều lên" },
+						{ item: "viên bi", container: "hũ", unit: "hũ", action: "chia đều vào" }
+					];
+
+					const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+					const itemsPerPack = getRandomInt(5, 9); // Số vật dụng trong 1 bao/hộp
+					const packs = getRandomInt(3, 6); // Số bao/hộp ở vế 1
+					const totalItems = packs * itemsPerPack;
+
+					const askPacks = getRandomInt(7, 12); // Số bao/hộp cần tìm ở vế 2
+					const askItems = askPacks * itemsPerPack; // Tổng số vật dụng đã biết ở vế 2
+
+					// Các đáp án bẫy nhiễu
+					const wrong1 = askPacks + 2;
+					const wrong2 = Math.max(1, askPacks - 1);
+					const wrong3 = Math.floor(askItems / packs); // Lấy tổng vế 2 chia nhầm cho số lượng vế 1
+
+					return makeQ(
+						`<div>Có $${fmt(totalItems)}$ ${ctx.item} được ${ctx.action} $${packs}$ ${ctx.container}. Hỏi có $${fmt(askItems)}$ ${ctx.item} thì ${ctx.action} được bao nhiêu ${ctx.container} như thế?</div>`,
+						`${askPacks} ${ctx.unit}`,
+						[
+							() => `${wrong1} ${ctx.unit}`,
+							() => `${wrong2} ${ctx.unit}`,
+							() => `${wrong3} ${ctx.unit}`
+						],
+						`<p class="font-bold text-blue-700">Bài giải:</p>` +
+						`<p>• Mỗi ${ctx.container} chứa số ${ctx.item} là:</p>` +
+						`<p>$${fmt(totalItems)} : ${packs} = ${itemsPerPack}$ (${ctx.item.split(' ').pop()})</p>` +
+						`<p>• $${fmt(askItems)}$ ${ctx.item} thì ${ctx.action.replace(" đều", "")} được số ${ctx.container} là:</p>` +
+						`<p>$${fmt(askItems)} : ${itemsPerPack} = ${askPacks}$ (${ctx.unit})</p>` +
+						`<p><b>Đáp số:</b> ${askPacks} ${ctx.unit}.</p>`
 					);
 				}
             ],
@@ -2165,10 +2892,18 @@ let scratchCtx = null;
 					const row1EndX = 85 + baseWidth;
 					const row2EndX = row1EndX - onePartW;
 
+					// Vạch chia nét đứt cho Dòng 1 (Xanh dương - x phần)
 					let innerTicksA = '';
 					for (let i = 1; i < x; i++) {
 						const tickX = Math.round(85 + i * onePartW);
 						innerTicksA += `<line x1="${tickX}" y1="28" x2="${tickX}" y2="42" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
+					}
+
+					// Vạch chia nét đứt cho Dòng 2 (Xanh lá - x-1 phần)
+					let innerTicksB = '';
+					for (let i = 1; i < x - 1; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicksB += `<line x1="${tickX}" y1="68" x2="${tickX}" y2="82" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
 					}
 
 					const bracketX = row1EndX + 10;
@@ -2176,7 +2911,7 @@ let scratchCtx = null;
 						? `<path d="M ${bracketX},35 C ${bracketX + 10},35 ${bracketX + 10},55 ${bracketX + 15},55 C ${bracketX + 10},55 ${bracketX + 10},75 ${bracketX},75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="${bracketX + 22}" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text>` 
 						: '';
 
-					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="380" height="115" viewBox="0 0 380 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${row1EndX}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${row1EndX}" y1="25" x2="${row1EndX}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="${85 + Math.round(baseWidth / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${row2EndX}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="75" x2="${row1EndX}" y2="75" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="4 3"></line><line x1="${row1EndX}" y1="65" x2="${row1EndX}" y2="85" stroke="#ef4444" stroke-width="2.5"></line><text x="${row2EndX + Math.round(onePartW / 2)}" y="62" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">-1/${x}</text><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="380" height="115" viewBox="0 0 380 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${row1EndX}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${row1EndX}" y1="25" x2="${row1EndX}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="${85 + Math.round(baseWidth / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${row2EndX}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#16a34a" stroke-width="2.5"></line>${innerTicksB}<line x1="${row2EndX}" y1="75" x2="${row1EndX}" y2="75" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="4 3"></line><line x1="${row1EndX}" y1="65" x2="${row1EndX}" y2="85" stroke="#ef4444" stroke-width="2.5"></line><text x="${row2EndX + Math.round(onePartW / 2)}" y="62" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">-1/${x}</text><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
 
 					// 4. ĐỀ BÀI VÀ BÀI GIẢI
 					if (askTotal) {
@@ -2293,15 +3028,23 @@ let scratchCtx = null;
 					const total = valA + valB;
 					const askTotal = getRandomInt(0, 1) === 1;
 
-					// 3. VẼ SƠ ĐỒ SVG "TĂNG THÊM 1/X" (SỬ DỤNG THẺ ĐÓNG ĐẦY ĐỦ CHỐNG LỖI HTML)
+					// 3. VẼ SƠ ĐỒ SVG "TĂNG THÊM 1/X"
 					const baseWidth = 150;
 					const onePartW = Math.round(baseWidth / x);
 					const row2EndX = 85 + baseWidth + onePartW;
 
+					// Vạch chia nét đứt cho Dòng 1 (Xanh dương)
 					let innerTicksA = '';
 					for (let i = 1; i < x; i++) {
 						const tickX = Math.round(85 + i * onePartW);
 						innerTicksA += `<line x1="${tickX}" y1="28" x2="${tickX}" y2="42" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
+					}
+
+					// Vạch chia nét đứt cho Dòng 2 (Xanh lá)
+					let innerTicksB = '';
+					for (let i = 1; i < x; i++) {
+						const tickX = Math.round(85 + i * onePartW);
+						innerTicksB += `<line x1="${tickX}" y1="68" x2="${tickX}" y2="82" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3 3"></line>`;
 					}
 
 					const bracketX = row2EndX + 10;
@@ -2309,7 +3052,7 @@ let scratchCtx = null;
 						? `<path d="M ${bracketX},35 C ${bracketX + 10},35 ${bracketX + 10},55 ${bracketX + 15},55 C ${bracketX + 10},55 ${bracketX + 10},75 ${bracketX},75" fill="none" stroke="#64748b" stroke-width="2.5"></path><text x="${bracketX + 22}" y="59" font-size="13" font-weight="bold" fill="#0f172a">? ${ctx.unit}</text>` 
 						: '';
 
-					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="380" height="115" viewBox="0 0 380 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${85 + baseWidth}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="25" x2="${85 + baseWidth}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="${85 + Math.round(baseWidth / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${85 + baseWidth}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="65" x2="${85 + baseWidth}" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="75" x2="${row2EndX}" y2="75" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="4 3"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#ef4444" stroke-width="2.5"></line><text x="${85 + baseWidth + Math.round(onePartW / 2)}" y="62" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">+1/${x}</text><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
+					const diagramHtml = `<div style="text-align:center;margin:14px 0;"><div style="display:inline-block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;box-shadow:0 2px 4px rgba(0,0,0,0.04);"><svg width="380" height="115" viewBox="0 0 380 115" style="display:block;max-width:100%;height:auto;"><text x="10" y="39" font-size="12" font-weight="bold" fill="#334155">${ctx.svg1}</text><text x="10" y="79" font-size="12" font-weight="bold" fill="#334155">${ctx.svg2}</text><line x1="85" y1="35" x2="${85 + baseWidth}" y2="35" stroke="#2563eb" stroke-width="3.5"></line><line x1="85" y1="25" x2="85" y2="45" stroke="#2563eb" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="25" x2="${85 + baseWidth}" y2="45" stroke="#2563eb" stroke-width="2.5"></line>${innerTicksA}<text x="${85 + Math.round(baseWidth / 2)}" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">${valA} ${ctx.unit}</text><line x1="85" y1="75" x2="${85 + baseWidth}" y2="75" stroke="#16a34a" stroke-width="3.5"></line><line x1="85" y1="65" x2="85" y2="85" stroke="#16a34a" stroke-width="2.5"></line><line x1="${85 + baseWidth}" y1="65" x2="${85 + baseWidth}" y2="85" stroke="#16a34a" stroke-width="2.5"></line>${innerTicksB}<line x1="${85 + baseWidth}" y1="75" x2="${row2EndX}" y2="75" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="4 3"></line><line x1="${row2EndX}" y1="65" x2="${row2EndX}" y2="85" stroke="#ef4444" stroke-width="2.5"></line><text x="${85 + baseWidth + Math.round(onePartW / 2)}" y="62" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">+1/${x}</text><text x="${Math.round((85 + row2EndX) / 2)}" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">? ${ctx.unit}</text>${totalBracketSvg}</svg></div></div>`;
 
 					// 4. ĐỀ BÀI VÀ BÀI GIẢI
 					if (askTotal) {
