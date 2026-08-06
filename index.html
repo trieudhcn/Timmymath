@@ -3418,6 +3418,26 @@ let scratchCtx = null;
 						`<p><b>Đáp số:</b> ${totalM} phút.</p>`
 					);
 				},
+				//đổi phút ra giờ
+				() => {
+					const h = getRandomInt(1, 3);
+					const m = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50][getRandomInt(0, 9)];
+					const totalM = h * 60 + m;
+
+					return makeQ(
+						`Điền số thích hợp vào chỗ chấm: $${totalM}\\text{ phút} = \\dots\\text{ giờ } \\dots\\text{ phút}$`,
+						`${h} giờ ${m} phút`,
+						[
+							() => `${h + 1} giờ ${m} phút`,
+							() => `${h} giờ ${m >= 50 ? m - 10 : m + 10} phút`,
+							() => `${h - 1 > 0 ? h - 1 : h + 2} giờ ${m} phút`
+						],
+						`<p class="font-bold text-blue-700">Bài giải:</p>` +
+						`<p>• Ta có: $${totalM}\\text{ phút} = ${h * 60}\\text{ phút} + ${m}\\text{ phút}$.</p>` +
+						`<p>• Vì $${h * 60}\\text{ phút} = ${h}\\text{ giờ}$ nên $${totalM}\\text{ phút} = ${h}\\text{ giờ } ${m}\\text{ phút}$.</p>` +
+						`<p><b>Đáp số:</b> ${h} giờ ${m} phút.</p>`
+					);
+				},
 				() => {
 					const h24 = getRandomInt(13, 20); // Từ 13h đến 20h
 					const min = [0, 15, 30, 45][getRandomInt(0, 3)];
