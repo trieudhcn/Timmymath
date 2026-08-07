@@ -4814,7 +4814,548 @@ let scratchCtx = null;
 						],
 						explainHtml
 					);
-				}            ],
+				}            
+			],
+			g4_more_less:[
+			//tính tiền mua 2 mặt hàng (phép nhân kết hợp phép cộng)
+			() => {
+				// 1. NGỮ CẢNH MUA SẮM ĐA DẠNG
+				const contexts = [
+					{
+						person: 'Mai',
+						place: 'cửa hàng văn phòng phẩm',
+						item1: { name: 'quyển vở', unit: 'quyển', minP: 6, maxP: 12 },
+						item2: { name: 'hộp bút chì màu', unit: 'hộp', minP: 15, maxP: 35 }
+					},
+					{
+						person: 'Mẹ',
+						place: 'cửa hàng hoa quả',
+						item1: { name: 'kg cam', unit: 'kg', minP: 20, maxP: 45 },
+						item2: { name: 'kg xoài', unit: 'kg', minP: 15, maxP: 30 }
+					},
+					{
+						person: 'Nam',
+						place: 'siêu thị',
+						item1: { name: 'gói bánh', unit: 'gói', minP: 12, maxP: 25 },
+						item2: { name: 'vỉ sữa', unit: 'vỉ', minP: 18, maxP: 32 }
+					},
+					{
+						person: 'Bác Hòa',
+						place: 'cửa hàng tạp hóa',
+						item1: { name: 'chai dầu ăn', unit: 'chai', minP: 35, maxP: 55 },
+						item2: { name: 'gói đường', unit: 'gói', minP: 12, maxP: 22 }
+					},
+					{
+						person: 'Chị Hà',
+						place: 'hiệu sách',
+						item1: { name: 'cuốn truyện', unit: 'cuốn', minP: 15, maxP: 30 },
+						item2: { name: 'bộ thước kẻ', unit: 'bộ', minP: 8, maxP: 18 }
+					}
+				];
+
+				const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+				// Hàm định dạng số tiền có khoảng trắng hàng nghìn (Chuẩn SGK Tiểu học: 8 000 đồng)
+				const fmt = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+				// 2. SINH DỮ LIỆU SỐ NGẪU NHIÊN
+				const q1 = getRandomInt(3, 6); // Số lượng mặt hàng 1
+				const p1 = getRandomInt(ctx.item1.minP, ctx.item1.maxP) * 1000; // Đơn giá mặt hàng 1
+
+				const q2 = getRandomInt(2, 5); // Số lượng mặt hàng 2
+				let p2 = getRandomInt(ctx.item2.minP, ctx.item2.maxP) * 1000; // Đơn giá mặt hàng 2
+				if (p1 === p2) p2 += 5000;
+
+				const cost1 = q1 * p1;
+				const cost2 = q2 * p2;
+				const total = cost1 + cost2;
+
+				// 3. TẠO TẬP HỢP ĐÁP ÁN NHIỄU (TRÁNH TRÙNG LẶP ĐÁP ÁN ĐÚNG)
+				const wrongOptions = [
+					`${fmt(cost1)} đồng`,                                     // Chỉ tính món thứ 1
+					`${fmt(cost2)} đồng`,                                     // Chỉ tính món thứ 2
+					`${fmt(cost1 + p2)} đồng`,                                // Món 2 không nhân số lượng
+					`${fmt((p1 + p2) * (q1 + q2))} đồng`,                     // Cộng tổng giá nhân tổng số lượng
+					`${fmt(total - 5000)} đồng`                               // Tính sai kết quả phép cộng
+				].filter(ans => ans !== `${fmt(total)} đồng`);
+
+				for (let i = wrongOptions.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+				}
+
+				// 4. NỘI DUNG CÂU HỎI VÀ BÀI GIẢI CHI TIẾT
+				const questionText = `<div><p>${ctx.person} đến ${ctx.place} mua $${q1}$ ${ctx.item1.name}, mỗi ${ctx.item1.unit} giá $${fmt(p1)}$ đồng và mua $${q2}$ ${ctx.item2.name}, mỗi ${ctx.item2.unit} giá $${fmt(p2)}$ đồng.</p>` +
+					`<p>Hỏi ${ctx.person} phải trả người bán hàng tất cả bao nhiêu tiền?</p></div>`;
+
+				const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+					`<p>${ctx.person} mua $${q1}$ ${ctx.item1.name} hết số tiền là:<br>&emsp;$${fmt(p1)} \\times ${q1} = ${fmt(cost1)}$ (đồng)</p>` +
+					`<p>${ctx.person} mua $${q2}$ ${ctx.item2.name} hết số tiền là:<br>&emsp;$${fmt(p2)} \\times ${q2} = ${fmt(cost2)}$ (đồng)</p>` +
+					`<p>${ctx.person} phải trả người bán hàng tất cả số tiền là:<br>&emsp;$${fmt(cost1)} + ${fmt(cost2)} = ${fmt(total)}$ (đồng)</p>` +
+					`<p><b>Đáp số:</b> $${fmt(total)}$ đồng.</p>`;
+
+				return makeQ(
+					questionText,
+					`${fmt(total)} đồng`,
+					[
+						() => wrongOptions[0],
+						() => wrongOptions[1],
+						() => wrongOptions[2]
+					],
+					explainHtml
+				);
+			},
+			//Code Dạng Toán 3 Đối Tượng (Linh hoạt "nhiều hơn" / "ít hơn")
+			() => {
+				// 1. BỔ SUNG NGỮ CẢNH ĐA DẠNG
+				const contexts = [
+					{
+						subject: 'Đàn vịt',
+						owners: ['nhà bác Đào', 'nhà bác Mận', 'nhà bác Cúc'],
+						unit: 'con',
+						verb: 'có'
+					},
+					{
+						subject: 'Số tiền tiết kiệm',
+						owners: ['bạn An', 'bạn Bình', 'bạn Cường'],
+						unit: 'đồng',
+						verb: 'có'
+					},
+					{
+						subject: 'Số mét đường',
+						owners: ['đội 1', 'đội 2', 'đội 3'],
+						unit: 'm',
+						verb: 'sửa được'
+					},
+					{
+						subject: 'Số kg nông sản',
+						owners: ['chuyến xe A', 'chuyến xe B', 'chuyến xe C'],
+						unit: 'kg',
+						verb: 'chở được'
+					},
+					{
+						subject: 'Số mét vải',
+						owners: ['xưởng may 1', 'xưởng may 2', 'xưởng may 3'],
+						unit: 'm',
+						verb: 'dệt được'
+					},
+					{
+						subject: 'Số cây xanh',
+						owners: ['khu phố A', 'khu phố B', 'khu phố C'],
+						unit: 'cây',
+						verb: 'trồng được'
+					}
+				];
+
+				const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+				const fmt = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+				// 2. SINH DỮ LIỆU & NGẪU NHIÊN "ÍI HƠN" HOẶC "NHIỀU HƠN"
+				const nA = getRandomInt(15, 35) * 100; // Giá trị gốc của đối tượng A
+				const d1 = getRandomInt(2, 6) * 100;  // Chênh lệch của B so với A
+				const d2 = getRandomInt(2, 6) * 100;  // Chênh lệch của C so với A
+
+				// true = "ít hơn", false = "nhiều hơn"
+				const isBLess = getRandomInt(0, 1) === 1;
+				const isCLess = getRandomInt(0, 1) === 1;
+
+				const nB = isBLess ? nA - d1 : nA + d1;
+				const nC = isCLess ? nA - d2 : nA + d2;
+				const total = nA + nB + nC;
+
+				// 3. PHƯƠNG ÁN SAI
+				const wrongOptions = [
+					`${fmt(nB + nC)} ${ctx.unit}`,
+					`${fmt(nA + (nA + d1) + (nA + d2))} ${ctx.unit}`,
+					`${fmt(nA + (nA - d1) + (nA - d2))} ${ctx.unit}`,
+					`${fmt(total - 400)} ${ctx.unit}`,
+					`${fmt(nA * 3)} ${ctx.unit}`
+				].filter(ans => ans !== `${fmt(total)} ${ctx.unit}`);
+
+				for (let i = wrongOptions.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+				}
+
+				// 4. ĐỀ BÀI VÀ BÀI GIẢI DỘNG
+				const [oA, oB, oC] = ctx.owners;
+				const subjCap = ctx.subject.charAt(0).toUpperCase() + ctx.subject.slice(1);
+
+				const textB = isBLess ? 'ít hơn' : 'nhiều hơn';
+				const textC = isCLess ? 'ít hơn' : 'nhiều hơn';
+				const opB = isBLess ? '-' : '+';
+				const opC = isCLess ? '-' : '+';
+
+				const questionText = `<div><p>${subjCap} ${oA} ${ctx.verb} $${fmt(nA)}$ ${ctx.unit}. ${subjCap} ${oB} ${ctx.verb} ${textB} ${ctx.subject.toLowerCase()} ${oA} $${fmt(d1)}$ ${ctx.unit}. ${subjCap} ${oC} ${ctx.verb} ${textC} ${ctx.subject.toLowerCase()} ${oA} $${fmt(d2)}$ ${ctx.unit}.</p>` +
+					`<p>Hỏi ${ctx.subject.toLowerCase()} của ${oA}, ${oB} và ${oC} có tất cả bao nhiêu ${ctx.unit}?</p></div>`;
+
+				const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+					`<p>${subjCap} ${oB} ${ctx.verb} số ${ctx.unit} là:<br>&emsp;$${fmt(nA)} ${opB} ${fmt(d1)} = ${fmt(nB)}$ (${ctx.unit})</p>` +
+					`<p>${subjCap} ${oC} ${ctx.verb} số ${ctx.unit} là:<br>&emsp;$${fmt(nA)} ${opC} ${fmt(d2)} = ${fmt(nC)}$ (${ctx.unit})</p>` +
+					`<p>${subjCap} của ${oA}, ${oB} và ${oC} có tất cả số ${ctx.unit} là:<br>&emsp;$${fmt(nA)} + ${fmt(nB)} + ${fmt(nC)} = ${fmt(total)}$ (${ctx.unit})</p>` +
+					`<p><b>Đáp số:</b> $${fmt(total)}$ ${ctx.unit}.</p>`;
+
+				return makeQ(
+					questionText,
+					`${fmt(total)} ${ctx.unit}`,
+					[
+						() => wrongOptions[0],
+						() => wrongOptions[1],
+						() => wrongOptions[2]
+					],
+					explainHtml
+				);
+			},
+			() => {
+				// 1. NGỮ CẢNH MỚI BỔ SUNG
+				const contexts = [
+					{ groupUnit: 'túi', item1: { name: 'táo', unit: 'quả' }, item2: { name: 'cam', unit: 'quả' } },
+					{ groupUnit: 'thùng', item1: { name: 'sách', unit: 'cuốn' }, item2: { name: 'vở', unit: 'quyển' } },
+					{ groupUnit: 'gói', item1: { name: 'kẹo', unit: 'cái' }, item2: { name: 'bánh', unit: 'cái' } },
+					{ groupUnit: 'hộp', item1: { name: 'bút chì', unit: 'cây' }, item2: { name: 'bút màu', unit: 'cây' } },
+					{ groupUnit: 'hàng', item1: { name: 'học sinh nam', unit: 'bạn' }, item2: { name: 'học sinh nữ', unit: 'bạn' } },
+					{ groupUnit: 'đĩa', item1: { name: 'bánh bao', unit: 'cái' }, item2: { name: 'bánh giò', unit: 'cái' } },
+					{ groupUnit: 'chậu', item1: { name: 'hoa hồng', unit: 'cây' }, item2: { name: 'hoa cúc', unit: 'cây' } },
+					{ groupUnit: 'kệ', item1: { name: 'truyện tranh', unit: 'cuốn' }, item2: { name: 'sách giáo khoa', unit: 'cuốn' } }
+				];
+
+				const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+				// 2. SINH DỮ LIỆU SỐ SAO CHO TỔNG SỐ NHÓM KHÁC NHAU
+				let n1 = getRandomInt(4, 9);
+				let n2 = getRandomInt(4, 9);
+				if (n1 === n2) n2 += 1;
+
+				const p1 = getRandomInt(4, 8);
+				const p2 = getRandomInt(4, 8);
+
+				const t1 = n1 * p1;
+				const t2 = n2 * p2;
+
+				const isItem1Greater = n1 > n2;
+				const greaterName = isItem1Greater ? ctx.item1.name : ctx.item2.name;
+				const smallerName = isItem1Greater ? ctx.item2.name : ctx.item1.name;
+				const greaterGroups = Math.max(n1, n2);
+				const smallerGroups = Math.min(n1, n2);
+				const diff = greaterGroups - smallerGroups;
+
+				const gCap = ctx.groupUnit.charAt(0).toUpperCase() + ctx.groupUnit.slice(1);
+
+				// 3. ĐÁP ÁN VÀ NHIỄU
+				const correctAnsStr = `${gCap} ${greaterName} nhiều hơn ${diff} ${ctx.groupUnit}`;
+
+				const wrongOptions = [
+					`${gCap} ${smallerName} nhiều hơn ${diff} ${ctx.groupUnit}`,
+					`${gCap} ${greaterName} nhiều hơn ${diff + 1} ${ctx.groupUnit}`,
+					`${gCap} ${smallerName} nhiều hơn ${diff + 1} ${ctx.groupUnit}`,
+					`${gCap} ${greaterName} nhiều hơn ${diff + 2} ${ctx.groupUnit}`
+				].filter(ans => ans !== correctAnsStr);
+
+				for (let i = wrongOptions.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+				}
+
+				// 4. ĐỀ BÀI VÀ LỜI GIẢI
+				const questionText = `<div><p>Chia $${t1}$ ${ctx.item1.unit} ${ctx.item1.name} vào các ${ctx.groupUnit}, mỗi ${ctx.groupUnit} $${p1}$ ${ctx.item1.unit} và chia $${t2}$ ${ctx.item2.unit} ${ctx.item2.name} vào các ${ctx.groupUnit}, mỗi ${ctx.groupUnit} $${p2}$ ${ctx.item2.unit}.</p>` +
+					`<p>Hỏi số ${ctx.groupUnit} ${ctx.item1.name} hay ${ctx.groupUnit} ${ctx.item2.name} có nhiều hơn và nhiều hơn mấy ${ctx.groupUnit}?</p></div>`;
+
+				const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+					`<p>Có số ${ctx.groupUnit} ${ctx.item1.name} là:<br>&emsp;$${t1} : ${p1} = ${n1}$ (${ctx.groupUnit})</p>` +
+					`<p>Có số ${ctx.groupUnit} ${ctx.item2.name} là:<br>&emsp;$${t2} : ${p2} = ${n2}$ (${ctx.groupUnit})</p>` +
+					`<p>Vì $${smallerGroups} < ${greaterGroups}$ nên số ${ctx.groupUnit} ${greaterName} nhiều hơn số ${ctx.groupUnit} ${smallerName}.</p>` +
+					`<p>Số ${ctx.groupUnit} ${greaterName} nhiều hơn số ${ctx.groupUnit} ${smallerName} là:<br>&emsp;$${greaterGroups} - ${smallerGroups} = ${diff}$ (${ctx.groupUnit})</p>` +
+					`<p><b>Đáp số:</b> ${gCap} ${greaterName} nhiều hơn $${diff}$ ${ctx.groupUnit}.</p>`;
+
+				return makeQ(
+					questionText,
+					correctAnsStr,
+					[
+						() => wrongOptions[0],
+						() => wrongOptions[1],
+						() => wrongOptions[2]
+					],
+					explainHtml
+				);
+			},
+			//tính số lượng còn lại sau 3 lần dùng/bán (kết hợp gấp lên một số lần, phép cộng và phép trừ)
+			() => {
+				// 1. NGỮ CẢNH ĐA DẠNG
+				const contexts = [
+					{
+						container: 'thùng nước mắm',
+						item: 'nước mắm',
+						unit: 'l',
+						verb: 'bán được',
+						location: 'Trong thùng'
+					},
+					{
+						container: 'kho gạo',
+						item: 'gạo',
+						unit: 'kg',
+						verb: 'xuất kho',
+						location: 'Trong kho'
+					},
+					{
+						container: 'cuộn dây điện',
+						item: 'dây điện',
+						unit: 'm',
+						verb: 'dùng hết',
+						location: 'Trên cuộn dây'
+					},
+					{
+						container: 'thùng sữa tươi',
+						item: 'sữa',
+						unit: 'l',
+						verb: 'bán được',
+						location: 'Trong thùng'
+					},
+					{
+						container: 'kho sách',
+						item: 'sách',
+						unit: 'cuốn',
+						verb: 'chuyển đi',
+						location: 'Trong kho'
+					},
+					{
+						container: 'bao đường',
+						item: 'đường',
+						unit: 'kg',
+						verb: 'bán được',
+						location: 'Trong bao'
+					}
+				];
+
+				const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+				// Định dạng số có khoảng cách hàng nghìn
+				const fmt = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+				// 2. SINH DỮ LIỆU SỐ (NGẪU NHIÊN GẤP ĐÔI HOẶC GẤP BA)
+				const k = getRandomInt(2, 3);
+				const kText = k === 2 ? 'gấp đôi' : 'gấp ba';
+
+				const a1 = getRandomInt(15, 35);               // Lần 1
+				const a2 = a1 * k;                              // Lần 2 (gấp k lần lần 1)
+				const a3 = getRandomInt(10, 40);               // Lần 3
+				const rem = getRandomInt(10, 30);              // Số còn lại
+				const soldTotal = a1 + a2 + a3;                // Tổng số đã bán/dùng
+				const initialTotal = soldTotal + rem;          // Tổng ban đầu
+
+				// 3. TẠO CÁC PHƯƠNG ÁN SAI
+				const correctAnsStr = `${fmt(rem)} ${ctx.unit}`;
+
+				const wrongOptions = [
+					`${fmt(soldTotal)} ${ctx.unit}`,                              // Nhầm số còn lại thành tổng số đã dùng
+					`${fmt(initialTotal - (a1 + a3))} ${ctx.unit}`,               // Quên không cộng lần 2
+					`${fmt(initialTotal - (a1 + a1 + a3))} ${ctx.unit}`,          // Nhầm gấp ba thành gấp đôi
+					`${fmt(rem + 15)} ${ctx.unit}`                                // Tính sai kết quả trừ
+				].filter(ans => ans !== correctAnsStr);
+
+				for (let i = wrongOptions.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+				}
+
+				// 4. XÂY DỰNG ĐỀ BÀI VÀ LỜI GIẢI CHI TIẾT
+				const questionText = `<div><p>Một ${ctx.container} có $${fmt(initialTotal)}$ ${ctx.unit}. Lần đầu ${ctx.verb} $${fmt(a1)}$ ${ctx.unit} ${ctx.item}, lần thứ hai ${ctx.verb} ${kText} số ${ctx.unit} ${ctx.item} ở lần đầu, lần thứ ba ${ctx.verb} $${fmt(a3)}$ ${ctx.unit} ${ctx.item}.</p>` +
+					`<p>Hỏi ${ctx.location.toLowerCase()} còn lại bao nhiêu ${ctx.unit} ${ctx.item}?</p></div>`;
+
+				const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+					`<p>Lần thứ hai ${ctx.verb} số ${ctx.unit} ${ctx.item} là:<br>&emsp;$${fmt(a1)} \\times ${k} = ${fmt(a2)}$ (${ctx.unit})</p>` +
+					`<p>Cả ba lần ${ctx.verb} số ${ctx.unit} ${ctx.item} là:<br>&emsp;$${fmt(a1)} + ${fmt(a2)} + ${fmt(a3)} = ${fmt(soldTotal)}$ (${ctx.unit})</p>` +
+					`<p>${ctx.location} còn lại số ${ctx.unit} ${ctx.item} là:<br>&emsp;$${fmt(initialTotal)} - ${fmt(soldTotal)} = ${fmt(rem)}$ (${ctx.unit})</p>` +
+					`<p><b>Đáp số:</b> $${fmt(rem)}$ ${ctx.unit} ${ctx.item}.</p>`;
+
+				return makeQ(
+					questionText,
+					correctAnsStr,
+					[
+						() => wrongOptions[0],
+						() => wrongOptions[1],
+						() => wrongOptions[2]
+					],
+					explainHtml
+				);
+			},
+			//Tìm tổng 3 đối tượng phụ thuộc tuần tự (kết hợp nhân, cộng/trừ và tổng)
+			() => {
+				// 1. NGỮ CẢNH BÀI TOÁN
+				const contexts = [
+					{
+						container: 'giỏ đựng trái cây',
+						loc: 'giỏ',
+						item1: 'Sầu riêng',
+						item2: 'Bưởi',
+						item3: 'Xoài',
+						unit: 'quả'
+					},
+					{
+						container: 'thùng sách',
+						loc: 'thùng',
+						item1: 'Sách Toán',
+						item2: 'Sách Tiếng Việt',
+						item3: 'Sách Tiếng Anh',
+						unit: 'cuốn'
+					},
+					{
+						container: 'trang trại',
+						loc: 'trang trại',
+						item1: 'Gà',
+						item2: 'Vịt',
+						item3: 'Ngỗng',
+						unit: 'con'
+					},
+					{
+						container: 'khu vườn',
+						loc: 'vườn',
+						item1: 'Cây cam',
+						item2: 'Cây bưởi',
+						item3: 'Cây xoài',
+						unit: 'cây'
+					},
+					{
+						container: 'hộp dụng cụ',
+						loc: 'hộp',
+						item1: 'Bút chì',
+						item2: 'Bút bi',
+						item3: 'Bút màu',
+						unit: 'cây'
+					}
+				];
+
+				const ctx = contexts[getRandomInt(0, contexts.length - 1)];
+
+				// Định dạng số có khoảng trắng hàng nghìn
+				const fmt = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+				// 2. SINH DỮ LIỆU SỐ NGẪU NHIÊN
+				const k = getRandomInt(2, 3); // Gấp 2 hoặc gấp 3 lần
+				const kText = k === 2 ? 'gấp đôi' : 'gấp ba';
+
+				const n1 = getRandomInt(8, 20);             // Số lượng đối tượng 1
+				const n2 = n1 * k;                           // Số lượng đối tượng 2 = n1 * k
+
+				const isMore = getRandomInt(0, 1) === 1;    // Đối tượng 3 nhiều hơn hay ít hơn đối tượng 2
+				const diff = getRandomInt(5, 15);           // Chênh lệch
+
+				const n3 = isMore ? n2 + diff : n2 - diff;  // Số lượng đối tượng 3
+				const total = n1 + n2 + n3;
+
+				const diffText = isMore ? 'nhiều hơn' : 'ít hơn';
+				const diffOp = isMore ? '+' : '-';
+
+				// 3. TẠO HÌNH SVG SƠ ĐỒ ĐOẠN THẲNG
+				const uW = 55;          // Chiều dài 1 đơn vị đoạn thẳng (px)
+				const diffW = 35;       // Chiều dài hiển thị đoạn chênh lệch
+				const xStart = 110;     // Tọa độ X bắt đầu vẽ
+				const y1 = 35, y2 = 80, y3 = 125; // Tọa độ Y cho 3 dòng
+
+				const xEnd1 = xStart + uW;
+				const xEnd2 = xStart + k * uW;
+				const xEnd3 = isMore ? xEnd2 + diffW : xEnd2 - diffW;
+				const maxX = Math.max(xEnd1, xEnd2, xEnd3);
+
+				let svgLines = '';
+
+				// Vạch đứt gióng từ hàng 1 xuống hàng 3 (cho phần đầu tiên)
+				svgLines += `<line x1="${xEnd1}" y1="${y1}" x2="${xEnd1}" y2="${y3}" stroke="#888888" stroke-dasharray="4,4" stroke-width="1.5" />`;
+
+				// Các vạch đứt chia phần tiếp theo trên hàng 2 (chỉ gióng từ y2 đến y3, không kéo lên y1)
+				for (let i = 2; i < k; i++) {
+					const xPos = xStart + i * uW;
+					svgLines += `<line x1="${xPos}" y1="${y2}" x2="${xPos}" y2="${y3}" stroke="#888888" stroke-dasharray="4,4" stroke-width="1.5" />`;
+				}
+
+				// Vạch đứt gióng điểm mút chênh lệch giữa hàng 2 và hàng 3 (chỉ từ y2 đến y3)
+				const xBoundary = isMore ? xEnd2 : xEnd3;
+				svgLines += `<line x1="${xBoundary}" y1="${y2}" x2="${xBoundary}" y2="${y3}" stroke="#888888" stroke-dasharray="4,4" stroke-width="1.5" />`;
+
+				// Móc ngoặc tổng ? ở bên phải
+				const braceX = maxX + 12;
+				const midY = (y1 + y3) / 2;
+				const bracePath = `M ${braceX} ${y1} C ${braceX + 10} ${y1}, ${braceX + 10} ${midY - 4}, ${braceX + 14} ${midY} C ${braceX + 10} ${midY + 4}, ${braceX + 10} ${y3}, ${braceX} ${y3}`;
+
+				// Móc nét đứt hiển thị giá trị
+				const arc1Path = `M ${xStart} ${y1 - 6} Q ${xStart + uW / 2} ${y1 - 18} ${xEnd1} ${y1 - 6}`;
+				const diffStartX = isMore ? xEnd2 : xEnd3;
+				const diffEndX = isMore ? xEnd3 : xEnd2;
+				const arcDiffPath = `M ${diffStartX} ${y3 + 6} Q ${diffStartX + diffW / 2} ${y3 + 18} ${diffEndX} ${y3 + 6}`;
+
+				const svgContent = `
+					<div class="flex justify-center my-3">
+						<svg width="450" height="175" viewBox="0 0 450 175" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="13">
+							<!-- Tên đối tượng -->
+							<text x="${xStart - 10}" y="${y1 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item1}:</text>
+							<text x="${xStart - 10}" y="${y2 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item2}:</text>
+							<text x="${xStart - 10}" y="${y3 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item3}:</text>
+
+							<!-- Đường vạch đứt -->
+							${svgLines}
+
+							<!-- Đoạn thẳng chính -->
+							<line x1="${xStart}" y1="${y1}" x2="${xEnd1}" y2="${y1}" stroke="#000000" stroke-width="2" />
+							<line x1="${xStart}" y1="${y2}" x2="${xEnd2}" y2="${y2}" stroke="#000000" stroke-width="2" />
+							<line x1="${xStart}" y1="${y3}" x2="${xEnd3}" y2="${y3}" stroke="#000000" stroke-width="2" />
+
+							<!-- Vạch mút đầu -->
+							<line x1="${xStart}" y1="${y1 - 5}" x2="${xStart}" y2="${y3 + 5}" stroke="#000000" stroke-width="1.5" />
+
+							<!-- Móc nét đứt hiển thị giá trị đoạn 1 -->
+							<path d="${arc1Path}" fill="none" stroke="#64748b" stroke-dasharray="2,2" stroke-width="1.2" />
+							<text x="${xStart + uW / 2}" y="${y1 - 18}" text-anchor="middle" font-weight="bold" fill="#0f172a">${fmt(n1)} ${ctx.unit}</text>
+
+							<!-- Móc nét đứt hiển thị giá trị đoạn chênh lệch -->
+							<path d="${arcDiffPath}" fill="none" stroke="#64748b" stroke-dasharray="2,2" stroke-width="1.2" />
+							<text x="${diffStartX + diffW / 2}" y="${y3 + 31}" text-anchor="middle" font-weight="bold" fill="#0f172a">${fmt(diff)} ${ctx.unit}</text>
+
+							<!-- Móc tổng bên phải -->
+							<path d="${bracePath}" fill="none" stroke="#1e293b" stroke-width="1.8" />
+							<text x="${braceX + 22}" y="${midY + 4}" text-anchor="start" font-weight="bold" fill="#d97706">? ${ctx.unit}</text>
+						</svg>
+					</div>
+				`;
+
+				// 4. ĐÁP ÁN NHIỄU
+				const correctAnsStr = `${fmt(total)} ${ctx.unit}`;
+
+				const wrongOptions = [
+					`${fmt(n2 + n3)} ${ctx.unit}`,
+					`${fmt(n1 + n2 + (isMore ? n2 - diff : n2 + diff))} ${ctx.unit}`,
+					`${fmt(n1 + (n1 + k) + n3)} ${ctx.unit}`,
+					`${fmt(total - 10)} ${ctx.unit}`
+				].filter(ans => ans !== correctAnsStr);
+
+				for (let i = wrongOptions.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+				}
+
+				// 5. NỘI DUNG CÂU HỎI VÀ LỜI GIẢI
+				const questionText = `<div>` +
+					`<p>Đặt đề toán theo tóm tắt sau rồi giải:</p>` +
+					`${svgContent}` +
+					`</div>`;
+
+				const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+					`<p><b>Đề toán:</b> Trong ${ctx.container} có $${fmt(n1)}$ ${ctx.unit} ${ctx.item1.toLowerCase()}. Số ${ctx.unit} ${ctx.item2.toLowerCase()} ${kText} số ${ctx.unit} ${ctx.item1.toLowerCase()}. Số ${ctx.unit} ${ctx.item3.toLowerCase()} ${diffText} số ${ctx.unit} ${ctx.item2.toLowerCase()} là $${fmt(diff)}$ ${ctx.unit}. Hỏi trong ${ctx.loc} có tất cả bao nhiêu ${ctx.unit} ${ctx.item1.toLowerCase()}, ${ctx.item2.toLowerCase()} và ${ctx.item3.toLowerCase()}?</p>` +
+					`<p>Số ${ctx.unit} ${ctx.item2.toLowerCase()} là:<br>&emsp;$${fmt(n1)} \\times ${k} = ${fmt(n2)}$ (${ctx.unit})</p>` +
+					`<p>Số ${ctx.unit} ${ctx.item3.toLowerCase()} là:<br>&emsp;$${fmt(n2)} ${diffOp} ${fmt(diff)} = ${fmt(n3)}$ (${ctx.unit})</p>` +
+					`<p>Số ${ctx.unit} ${ctx.item1.toLowerCase()}, ${ctx.item2.toLowerCase()} và ${ctx.item3.toLowerCase()} có tất cả là:<br>&emsp;$${fmt(n1)} + ${fmt(n2)} + ${fmt(n3)} = ${fmt(total)}$ (${ctx.unit})</p>` +
+					`<p><b>Đáp số:</b> $${fmt(total)}$ ${ctx.unit}.</p>`;
+
+				return makeQ(
+					questionText,
+					correctAnsStr,
+					[
+						() => wrongOptions[0],
+						() => wrongOptions[1],
+						() => wrongOptions[2]
+					],
+					explainHtml
+				);
+			},
+			],
             g4_units_avg: [
                 () => {
                     const n1 = getRandomInt(10, 30), n2 = getRandomInt(20, 40), n3 = getRandomInt(30, 50);
@@ -5108,7 +5649,318 @@ let scratchCtx = null;
 						`<p>• Vì $${deg1}^\\circ ${ans.replaceAll('$', '')} ${deg2}^\\circ$ nên số đo **${type1.name}** ${ans} số đo **${type2.name}**.</p>` +
 						`<p><b>Đáp số:</b> ${ans}.</p>`
 					);
-				}
+				},
+				//xác định các cặp vuông góc
+				() => {
+					// 1. TẬP HỢP BỘ CHỮ CÁI ĐẶT TÊN ĐỈNH
+					const letterSets = [
+						['A', 'B', 'C', 'D', 'E', 'O'],
+						['M', 'N', 'P', 'Q', 'R', 'I'],
+						['E', 'F', 'G', 'H', 'K', 'T']
+					];
+					const L = letterSets[getRandomInt(0, letterSets.length - 1)];
+
+					// 2. CHỌN NGẪU NHIÊN LOẠI HÌNH (0: Hình thang vuông, 1: Hình chữ nhật, 2: Hình ngũ giác, 3: Hình thoi)
+					const shapeType = getRandomInt(0, 3);
+
+					let svgContent = '';
+					let correctCount = 0;
+					let pairsList = [];
+
+					if (shapeType === 0) {
+						// --- HÌNH THANG VUÔNG ---
+						correctCount = 2;
+						pairsList = [
+							`Góc vuông tại đỉnh $${L[0]}$: Đoạn thẳng $${L[0]}${L[1]}$ vuông góc với đoạn thẳng $${L[0]}${L[3]}$`,
+							`Góc vuông tại đỉnh $${L[3]}$: Đoạn thẳng $${L[3]}${L[0]}$ vuông góc với đoạn thẳng $${L[3]}${L[2]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<polygon points="100,35 260,35 200,155 100,155" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="83" y="35" fill="#0f172a">${L[0]}</text>
+									<text x="268" y="35" fill="#0f172a">${L[1]}</text>
+									<text x="208" y="170" fill="#0f172a">${L[2]}</text>
+									<text x="83" y="170" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else if (shapeType === 1) {
+						// --- HÌNH CHỮ NHẬT / HÌNH VUÔNG ---
+						correctCount = 4;
+						pairsList = [
+							`Góc vuông tại đỉnh $${L[0]}$: Đoạn thẳng $${L[0]}${L[1]}$ vuông góc với đoạn thẳng $${L[0]}${L[3]}$`,
+							`Góc vuông tại đỉnh $${L[1]}$: Đoạn thẳng $${L[1]}${L[0]}$ vuông góc với đoạn thẳng $${L[1]}${L[2]}$`,
+							`Góc vuông tại đỉnh $${L[2]}$: Đoạn thẳng $${L[2]}${L[1]}$ vuông góc với đoạn thẳng $${L[2]}${L[3]}$`,
+							`Góc vuông tại đỉnh $${L[3]}$: Đoạn thẳng $${L[3]}${L[2]}$ vuông góc với đoạn thẳng $${L[3]}${L[0]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<rect x="90" y="35" width="160" height="120" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="73" y="35" fill="#0f172a">${L[0]}</text>
+									<text x="258" y="35" fill="#0f172a">${L[1]}</text>
+									<text x="258" y="170" fill="#0f172a">${L[2]}</text>
+									<text x="73" y="170" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else if (shapeType === 2) {
+						// --- HÌNH NGŨ GIÁC VUÔNG ---
+						correctCount = 3;
+						pairsList = [
+							`Góc vuông tại đỉnh $${L[0]}$: Đoạn thẳng $${L[0]}${L[1]}$ vuông góc với đoạn thẳng $${L[0]}${L[4]}$`,
+							`Góc vuông tại đỉnh $${L[2]}$: Đoạn thẳng $${L[2]}${L[1]}$ vuông góc với đoạn thẳng $${L[2]}${L[3]}$`,
+							`Góc vuông tại đỉnh $${L[3]}$: Đoạn thẳng $${L[3]}${L[2]}$ vuông góc với đoạn thẳng $${L[3]}${L[4]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<polygon points="80,95 130,40 250,40 250,150 130,150" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="63" y="100" fill="#0f172a">${L[0]}</text>
+									<text x="127" y="28" fill="#0f172a">${L[1]}</text>
+									<text x="258" y="38" fill="#0f172a">${L[2]}</text>
+									<text x="258" y="165" fill="#0f172a">${L[3]}</text>
+									<text x="127" y="168" fill="#0f172a">${L[4]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else {
+						// --- HÌNH THOI CÓ 2 ĐƯỜNG CHÉO ---
+						correctCount = 4;
+						pairsList = [
+							`Góc vuông tại đỉnh $${L[5]}$: Đoạn thẳng $${L[5]}${L[0]}$ vuông góc với đoạn thẳng $${L[5]}${L[1]}$`,
+							`Góc vuông tại đỉnh $${L[5]}$: Đoạn thẳng $${L[5]}${L[1]}$ vuông góc với đoạn thẳng $${L[5]}${L[2]}$`,
+							`Góc vuông tại đỉnh $${L[5]}$: Đoạn thẳng $${L[5]}${L[2]}$ vuông góc với đoạn thẳng $${L[5]}${L[3]}$`,
+							`Góc vuông tại đỉnh $${L[5]}$: Đoạn thẳng $${L[5]}${L[3]}$ vuông góc với đoạn thẳng $${L[5]}${L[0]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<!-- Hình thoi -->
+									<polygon points="170,25 270,95 170,165 70,95" fill="none" stroke="#1e293b" stroke-width="2" />
+									<!-- Hai đường chéo -->
+									<line x1="170" y1="25" x2="170" y2="165" stroke="#1e293b" stroke-width="1.5" />
+									<line x1="70" y1="95" x2="270" y2="95" stroke="#1e293b" stroke-width="1.5" />
+									<!-- Nhãn đỉnh -->
+									<text x="166" y="16" fill="#0f172a">${L[0]}</text>
+									<text x="278" y="99" fill="#0f172a">${L[1]}</text>
+									<text x="166" y="182" fill="#0f172a">${L[2]}</text>
+									<text x="53" y="99" fill="#0f172a">${L[3]}</text>
+									<text x="176" y="88" fill="#d97706">${L[5]}</text>
+								</svg>
+							</div>
+						`;
+					}
+
+					// 3. TẠO ĐÁP ÁN ĐÚNG VÀ CÁC PHƯƠNG ÁN NHIỄU
+					const correctAnsStr = `${correctCount} cặp`;
+
+					const wrongOptions = [
+						`${correctCount + 1} cặp`,
+						`${Math.max(1, correctCount - 1)} cặp`,
+						`${correctCount + 2} cặp`
+					].filter(ans => ans !== correctAnsStr);
+
+					for (let i = wrongOptions.length - 1; i > 0; i--) {
+						const j = Math.floor(Math.random() * (i + 1));
+						[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+					}
+
+					// 4. XÂY DỰNG ĐỀ BÀI VÀ LỜI GIẢI CHI TIẾT
+					const questionText = `<div>` +
+						`<p>Dùng ê-ke để kiểm tra các góc vuông trong hình dưới đây, rồi cho biết hình có bao nhiêu cặp đoạn thẳng vuông góc với nhau?</p>` +
+						`${svgContent}` +
+						`</div>`;
+
+					const explainPairsHtml = pairsList.map(p => `<li>${p}</li>`).join('');
+
+					const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+						`<p>Kiểm tra bằng ê-ke, ta tìm được các cặp đoạn thẳng vuông góc với nhau gồm:</p>` +
+						`<ul class="list-disc pl-5 my-2 space-y-1">${explainPairsHtml}</ul>` +
+						`<p>Như vậy, hình trên có tất cả <b>${correctCount} cặp</b> đoạn thẳng vuông góc với nhau.</p>` +
+						`<p><b>Đáp số:</b> ${correctCount} cặp.</p>`;
+
+					return makeQ(
+						questionText,
+						correctAnsStr,
+						[
+							() => wrongOptions[0],
+							() => wrongOptions[1],
+							() => wrongOptions[2]
+						],
+						explainHtml
+					);
+				},
+				//2 đường thẳng vuông Góc
+				() => {
+					// 1. TẬP HỢP BỘ CHỮ CÁI ĐẶT TÊN ĐỈNH
+					const letterSets = [
+						['A', 'B', 'C', 'D'],
+						['M', 'N', 'P', 'Q'],
+						['E', 'F', 'G', 'H'],
+						['K', 'L', 'M', 'N']
+					];
+					const L = letterSets[getRandomInt(0, letterSets.length - 1)];
+
+					// 2. CHỌN NGẪU NHIÊN LOẠI HÌNH
+					// 0: Hình chữ nhật (2 cặp), 1: Hình bình hành (2 cặp), 2: Hình thang (1 cặp), 3: Hình thoi (2 cặp), 4: Tứ giác thường (0 cặp)
+					const shapeType = getRandomInt(0, 4);
+
+					let svgContent = '';
+					let correctCount = 0;
+					let pairsList = [];
+
+					if (shapeType === 0) {
+						// --- HÌNH CHỮ NHẬT / HÌNH VUÔNG ---
+						correctCount = 2;
+						pairsList = [
+							`Đoạn thẳng $${L[0]}${L[1]}$ song song với đoạn thẳng $${L[3]}${L[2]}$`,
+							`Đoạn thẳng $${L[0]}${L[3]}$ song song với đoạn thẳng $${L[1]}${L[2]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<rect x="80" y="40" width="170" height="110" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="63" y="40" fill="#0f172a">${L[0]}</text>
+									<text x="258" y="40" fill="#0f172a">${L[1]}</text>
+									<text x="258" y="165" fill="#0f172a">${L[2]}</text>
+									<text x="63" y="165" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else if (shapeType === 1) {
+						// --- HÌNH BÌNH HÀNH ---
+						correctCount = 2;
+						pairsList = [
+							`Đoạn thẳng $${L[0]}${L[1]}$ song song với đoạn thẳng $${L[3]}${L[2]}$`,
+							`Đoạn thẳng $${L[0]}${L[3]}$ song song với đoạn thẳng $${L[1]}${L[2]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<polygon points="110,40 260,40 210,145 60,145" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="93" y="40" fill="#0f172a">${L[0]}</text>
+									<text x="268" y="40" fill="#0f172a">${L[1]}</text>
+									<text x="218" y="162" fill="#0f172a">${L[2]}</text>
+									<text x="43" y="162" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else if (shapeType === 2) {
+						// --- HÌNH THANG ---
+						correctCount = 1;
+						pairsList = [
+							`Đoạn thẳng $${L[0]}${L[1]}$ song song với đoạn thẳng $${L[3]}${L[2]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<polygon points="110,40 210,40 270,145 50,145" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="93" y="40" fill="#0f172a">${L[0]}</text>
+									<text x="218" y="40" fill="#0f172a">${L[1]}</text>
+									<text x="278" y="162" fill="#0f172a">${L[2]}</text>
+									<text x="33" y="162" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else if (shapeType === 3) {
+						// --- HÌNH THOI ---
+						correctCount = 2;
+						pairsList = [
+							`Đoạn thẳng $${L[0]}${L[1]}$ song song với đoạn thẳng $${L[3]}${L[2]}$`,
+							`Đoạn thẳng $${L[0]}${L[3]}$ song song với đoạn thẳng $${L[1]}${L[2]}$`
+						];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<polygon points="170,25 260,95 170,165 80,95" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="166" y="16" fill="#0f172a">${L[0]}</text>
+									<text x="268" y="99" fill="#0f172a">${L[1]}</text>
+									<text x="166" y="182" fill="#0f172a">${L[2]}</text>
+									<text x="63" y="99" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+
+					} else {
+						// --- TỨ GIÁC TỰ DO (0 CẶP SONG SONG) ---
+						correctCount = 0;
+						pairsList = [];
+
+						svgContent = `
+							<div class="flex justify-center my-3">
+								<svg width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+									<polygon points="90,40 240,60 210,150 70,120" fill="none" stroke="#1e293b" stroke-width="2" />
+									<text x="73" y="40" fill="#0f172a">${L[0]}</text>
+									<text x="248" y="60" fill="#0f172a">${L[1]}</text>
+									<text x="218" y="165" fill="#0f172a">${L[2]}</text>
+									<text x="53" y="130" fill="#0f172a">${L[3]}</text>
+								</svg>
+							</div>
+						`;
+					}
+
+					// 3. TẠO ĐÁP ÁN ĐÚNG VÀ CÁC PHƯƠNG ÁN NHIỄU
+					const correctAnsStr = `${correctCount} cặp`;
+
+					const wrongOptions = [
+						`${correctCount + 1} cặp`,
+						`${correctCount + 2} cặp`,
+						`${correctCount === 0 ? 3 : Math.max(0, correctCount - 1)} cặp`
+					].filter(ans => ans !== correctAnsStr);
+
+					for (let i = wrongOptions.length - 1; i > 0; i--) {
+						const j = Math.floor(Math.random() * (i + 1));
+						[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
+					}
+
+					// 4. XÂY DỰNG ĐỀ BÀI VÀ LỜI GIẢI CHI TIẾT
+					const questionText = `<div>` +
+						`<p>Quan sát hình vẽ dưới đây và cho biết hình có bao nhiêu cặp đoạn thẳng song song với nhau?</p>` +
+						`${svgContent}` +
+						`</div>`;
+
+					let explainDetail = '';
+					if (correctCount > 0) {
+						const explainPairsHtml = pairsList.map(p => `<li>${p}</li>`).join('');
+						explainDetail = `<p>Quan sát hình vẽ, các cặp đoạn thẳng song song với nhau gồm:</p>` +
+							`<ul class="list-disc pl-5 my-2 space-y-1">${explainPairsHtml}</ul>` +
+							`<p>Như vậy, hình trên có tất cả <b>${correctCount} cặp</b> đoạn thẳng song song với nhau.</p>`;
+					} else {
+						explainDetail = `<p>Quan sát hình vẽ, ta thấy không có cặp đoạn thẳng nào song song với nhau.</p>` +
+							`<p>Như vậy, hình trên có tất cả <b>0 cặp</b> đoạn thẳng song song với nhau.</p>`;
+					}
+
+					const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
+						`${explainDetail}` +
+						`<p><b>Đáp số:</b> ${correctCount} cặp.</p>`;
+
+					return makeQ(
+						questionText,
+						correctAnsStr,
+						[
+							() => wrongOptions[0],
+							() => wrongOptions[1],
+							() => wrongOptions[2]
+						],
+						explainHtml
+					);
+				}				
 			],
             // --- LỚP 5 ---
             g5_decimals: [
@@ -11559,6 +12411,7 @@ let scratchCtx = null;
                 { id: "g4_fraction_calc", title: "Phân Số - Phép Tính Phân Số", icon: "fa-pie-chart", color: "from-purple-500 to-indigo-600", desc: "Cộng, trừ, nhân, chia - So sánh, rút gọn phân số." },
                 { id: "g4_geometry", title: "Hình Bình Hành & Hình Thoi", icon: "fa-shapes", color: "from-emerald-500 to-teal-600", desc: "Tính diện tích hình bình hành, hình thoi trực quan SVG." },
                 { id: "g4_Angle", title: "Góc Đo - Tọa Độ", icon: "fa-brands fa-laravel", color: "from-fuchsia-400 to-purple-500", desc: "Xác định góc, so sánh số đo góc SVG." },
+				{ id: "g4_more_less", title: "Bài Toán Giải 3 Bước Tính", icon: "fa-layer-group", color: "from-amber-500 to-orange-600", desc: "Các dạng bài toán 3 bước tính." },
                 { id: "g4_units_avg", title: "Trung Bình Cộng & Đơn Vị Đo", icon: "fa-brands fa-meta", color: "from-rose-500 to-pink-600", desc: "Trung bình cộng, đổi đơn vị Yến, Tạ, Tấn, m²." }
             ],
             grade5: [
