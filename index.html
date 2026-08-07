@@ -4565,7 +4565,6 @@ let scratchCtx = null;
 					const correctLabels = [];
 
 					// 2. BỘ HÀM VẼ ĐA DẠNG CÁC HÌNH NHIỄU (KHÔNG PHẢI HÌNH BÌNH HÀNH)
-					// (1) Hình thang cân
 					function drawIsoscelesTrapezoid(cx, cy) {
 						const wTop = 2, wBot = 4, h = 2;
 						const startX = cx - Math.round((wBot * g) / 2);
@@ -4581,7 +4580,6 @@ let scratchCtx = null;
 						};
 					}
 
-					// (2) Hình thang vuông
 					function drawRightTrapezoid(cx, cy) {
 						const wTop = 2, wBot = 4, h = 2;
 						const startX = cx - Math.round((wBot * g) / 2);
@@ -4596,7 +4594,6 @@ let scratchCtx = null;
 						};
 					}
 
-					// (3) Hình thang lệch (Scalene)
 					function drawScaleneTrapezoid(cx, cy) {
 						const wTop = 2, wBot = 5, h = 2, shift = 2;
 						const startX = cx - Math.round((wBot * g) / 2);
@@ -4611,7 +4608,6 @@ let scratchCtx = null;
 						};
 					}
 
-					// (4) Tứ giác thường (Không có cạnh nào song song)
 					function drawIrregularQuad(cx, cy) {
 						const startX = cx - 2 * g;
 						const startY = cy + 1 * g;
@@ -4625,7 +4621,6 @@ let scratchCtx = null;
 						};
 					}
 
-					// Biến đếm xoay vòng loại hình sai để tránh trùng lập giữa các vị trí
 					let nonTargetTypeCounter = getRandomInt(0, 3);
 
 					// 3. SINH CÁC HÌNH CỤ THỂ THEO DẠNG BÀI
@@ -4637,7 +4632,6 @@ let scratchCtx = null;
 						if (isTarget) {
 							correctLabels.push(label);
 							if (askRhombus) {
-								// Hình thoi (Thoay đổi bán kính dọc/ngang)
 								const a = (i % 2 === 0) ? 2 : 3;
 								const b = (i % 2 === 0) ? 3 : 2;
 								const p1 = `${cx - a * g},${cy}`;
@@ -4647,13 +4641,11 @@ let scratchCtx = null;
 
 								shapes.push({
 									label, points: `${p1} ${p2} ${p3} ${p4}`, textPos: { x: cx, y: cy + 4 },
-									reason: `<b>Hình ${label}:</b> Có 4 cạnh bằng nhau và 2 cặp cạnh đối diện song song $\\rightarrow$ <b>Là hình thoi</b>.`
+									reason: `<b>Hình $${label}$:</b> Có 4 cạnh bằng nhau và 2 cặp cạnh đối diện song song $\\rightarrow$ <b>Là hình thoi</b>.`
 								});
 							} else {
-								// Hình bình hành (Luân phiên HBH xéo, Hình chữ nhật, Hình thoi)
 								const subType = (i + getRandomInt(0, 2)) % 3;
 								if (subType === 0) {
-									// HBH nghiêng
 									const w = 3, h = 2, s = (i % 2 === 0) ? 1 : -1;
 									const startX = cx - Math.round(((w + Math.abs(s)) * g) / 2);
 									const startY = cy + Math.round((h * g) / 2);
@@ -4664,10 +4656,9 @@ let scratchCtx = null;
 
 									shapes.push({
 										label, points: `${p1} ${p2} ${p3} ${p4}`, textPos: { x: cx, y: cy + 4 },
-										reason: `<b>Hình ${label}:</b> Có 2 cặp cạnh đối diện song song và bằng nhau $\\rightarrow$ <b>Là hình bình hành</b>.`
+										reason: `<b>Hình $${label}$:</b> Có 2 cặp cạnh đối diện song song và bằng nhau $\\rightarrow$ <b>Là hình bình hành</b>.`
 									});
 								} else if (subType === 1) {
-									// Hình chữ nhật
 									const w = 4, h = 2;
 									const startX = cx - Math.round((w * g) / 2);
 									const startY = cy - Math.round((h * g) / 2);
@@ -4678,10 +4669,9 @@ let scratchCtx = null;
 
 									shapes.push({
 										label, points: `${p1} ${p2} ${p3} ${p4}`, textPos: { x: cx, y: cy + 4 },
-										reason: `<b>Hình ${label}:</b> Là hình chữ nhật (có 2 cặp cạnh đối diện song song và bằng nhau) $\\rightarrow$ <b>Là hình bình hành</b>.`
+										reason: `<b>Hình $${label}$:</b> Là hình chữ nhật (có 2 cặp cạnh đối diện song song và bằng nhau) $\\rightarrow$ <b>Là hình bình hành</b>.`
 									});
 								} else {
-									// Hình thoi
 									const a = 2, b = 2;
 									const p1 = `${cx - a * g},${cy}`;
 									const p2 = `${cx},${cy - b * g}`;
@@ -4690,12 +4680,11 @@ let scratchCtx = null;
 
 									shapes.push({
 										label, points: `${p1} ${p2} ${p3} ${p4}`, textPos: { x: cx, y: cy + 4 },
-										reason: `<b>Hình ${label}:</b> Là hình thoi (có 2 cặp cạnh đối diện song song và bằng nhau) $\\rightarrow$ <b>Là hình bình hành</b>.`
+										reason: `<b>Hình $${label}$:</b> Là hình thoi (có 2 cặp cạnh đối diện song song và bằng nhau) $\\rightarrow$ <b>Là hình bình hành</b>.`
 									});
 								}
 							}
 						} else {
-							// Sinh hình SAI (Đảm bảo mỗi ô hình sai là 1 kiểu khác hoàn toàn)
 							if (askRhombus) {
 								const type = nonTargetTypeCounter % 3;
 								nonTargetTypeCounter++;
@@ -4709,7 +4698,7 @@ let scratchCtx = null;
 									const p4 = `${startX + s * g},${startY - h * g}`;
 									shapes.push({
 										label, points: `${p1} ${p2} ${p3} ${p4}`, textPos: { x: cx, y: cy + 4 },
-										reason: `<b>Hình ${label}:</b> Là hình bình hành có các cạnh kề không bằng nhau $\\rightarrow$ <b>Không phải hình thoi</b>.`
+										reason: `<b>Hình $${label}$:</b> Là hình bình hành có các cạnh kề không bằng nhau $\\rightarrow$ <b>Không phải hình thoi</b>.`
 									});
 								} else if (type === 1) {
 									const w = 4, h = 2;
@@ -4721,17 +4710,16 @@ let scratchCtx = null;
 									const p4 = `${startX},${startY + h * g}`;
 									shapes.push({
 										label, points: `${p1} ${p2} ${p3} ${p4}`, textPos: { x: cx, y: cy + 4 },
-										reason: `<b>Hình ${label}:</b> Là hình chữ nhật có 4 cạnh không bằng nhau $\\rightarrow$ <b>Không phải hình thoi</b>.`
+										reason: `<b>Hình $${label}$:</b> Là hình chữ nhật có 4 cạnh không bằng nhau $\\rightarrow$ <b>Không phải hình thoi</b>.`
 									});
 								} else {
 									const res = drawIsoscelesTrapezoid(cx, cy);
 									shapes.push({
 										label, points: res.points, textPos: { x: cx, y: cy + 4 },
-										reason: `<b>Hình ${label}:</b> Là hình thang $\\rightarrow$ <b>Không phải hình thoi</b>.`
+										reason: `<b>Hình $${label}$:</b> Là hình thang $\\rightarrow$ <b>Không phải hình thoi</b>.`
 									});
 								}
 							} else {
-								// Tìm Hình Bình Hành -> Tạo 4 loại hình sai hoàn toàn khác biệt
 								const type = nonTargetTypeCounter % 4;
 								nonTargetTypeCounter++;
 
@@ -4743,7 +4731,7 @@ let scratchCtx = null;
 
 								shapes.push({
 									label, points: res.points, textPos: { x: cx, y: cy + 4 },
-									reason: `<b>Hình ${label}:</b> Có ${res.desc} $\\rightarrow$ <b>Không phải hình bình hành</b>.`
+									reason: `<b>Hình $${label}$:</b> Có ${res.desc} $\\rightarrow$ <b>Không phải hình bình hành</b>.`
 								});
 							}
 						}
@@ -4771,15 +4759,15 @@ let scratchCtx = null;
 						[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
 					}
 
-					// 5. RENDER SVG LƯỚI & TẠO CÂU HỎI
+					// 5. RENDER SVG LƯỚI (TRIỆT TIÊU ĐỘ LỆCH CỦA NHÃN "CÂU X")
 					const svgShapes = shapes.map(s => `
 						<polygon points="${s.points}" fill="rgba(37, 99, 235, 0.12)" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>
 						<text x="${s.textPos.x}" y="${s.textPos.y}" font-size="15" font-weight="bold" fill="#1e1b4b" text-anchor="middle" dominant-baseline="middle">${s.label}</text>
 					`).join('');
 
-					const diagramHtml = `<div style="text-align:center;margin:14px 0;">
-						<div style="display:inline-block;background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-							<svg width="400" height="240" viewBox="0 0 400 240" style="display:block;max-width:100%;height:auto;">
+					const diagramHtml = `<div style="margin-left: -30px; width: calc(100% + 30px); text-align: center; margin-top: 12px; margin-bottom: 12px; clear: both; box-sizing: border-box;">
+						<div style="display: inline-block; width: 100%; max-width: 340px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); box-sizing: border-box;">
+							<svg viewBox="0 0 400 240" style="width: 100%; height: auto; display: block;">
 								<defs>
 									<pattern id="${patternId}" width="16" height="16" patternUnits="userSpaceOnUse">
 										<path d="M 16 0 L 0 0 0 16" fill="none" stroke="#e2e8f0" stroke-width="1"/>
@@ -4814,7 +4802,7 @@ let scratchCtx = null;
 						],
 						explainHtml
 					);
-				}            
+				}
 			],
 			g4_more_less:[
 			//tính tiền mua 2 mặt hàng (phép nhân kết hợp phép cộng)
