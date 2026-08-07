@@ -5211,127 +5211,130 @@ let scratchCtx = null;
 						unit: 'cây'
 					}
 				];
-
+			
 				const ctx = contexts[getRandomInt(0, contexts.length - 1)];
-
+			
 				// Định dạng số có khoảng trắng hàng nghìn
 				const fmt = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
+			
 				// 2. SINH DỮ LIỆU SỐ NGẪU NHIÊN
 				const k = getRandomInt(2, 3); // Gấp 2 hoặc gấp 3 lần
 				const kText = k === 2 ? 'gấp đôi' : 'gấp ba';
-
+			
 				const n1 = getRandomInt(8, 20);             // Số lượng đối tượng 1
 				const n2 = n1 * k;                           // Số lượng đối tượng 2 = n1 * k
-
+			
 				const isMore = getRandomInt(0, 1) === 1;    // Đối tượng 3 nhiều hơn hay ít hơn đối tượng 2
 				const diff = getRandomInt(5, 15);           // Chênh lệch
-
+			
 				const n3 = isMore ? n2 + diff : n2 - diff;  // Số lượng đối tượng 3
 				const total = n1 + n2 + n3;
-
+			
 				const diffText = isMore ? 'nhiều hơn' : 'ít hơn';
 				const diffOp = isMore ? '+' : '-';
-
+			
 				// 3. TẠO HÌNH SVG SƠ ĐỒ ĐOẠN THẲNG
 				const uW = 55;          // Chiều dài 1 đơn vị đoạn thẳng (px)
 				const diffW = 35;       // Chiều dài hiển thị đoạn chênh lệch
 				const xStart = 110;     // Tọa độ X bắt đầu vẽ
 				const y1 = 35, y2 = 80, y3 = 125; // Tọa độ Y cho 3 dòng
-
+			
 				const xEnd1 = xStart + uW;
 				const xEnd2 = xStart + k * uW;
 				const xEnd3 = isMore ? xEnd2 + diffW : xEnd2 - diffW;
 				const maxX = Math.max(xEnd1, xEnd2, xEnd3);
-
+			
 				let svgLines = '';
-
+			
 				// Vạch đứt gióng từ hàng 1 xuống hàng 3 (cho phần đầu tiên)
 				svgLines += `<line x1="${xEnd1}" y1="${y1}" x2="${xEnd1}" y2="${y3}" stroke="#888888" stroke-dasharray="4,4" stroke-width="1.5" />`;
-
+			
 				// Các vạch đứt chia phần tiếp theo trên hàng 2 (chỉ gióng từ y2 đến y3, không kéo lên y1)
 				for (let i = 2; i < k; i++) {
 					const xPos = xStart + i * uW;
 					svgLines += `<line x1="${xPos}" y1="${y2}" x2="${xPos}" y2="${y3}" stroke="#888888" stroke-dasharray="4,4" stroke-width="1.5" />`;
 				}
-
+			
 				// Vạch đứt gióng điểm mút chênh lệch giữa hàng 2 và hàng 3 (chỉ từ y2 đến y3)
 				const xBoundary = isMore ? xEnd2 : xEnd3;
 				svgLines += `<line x1="${xBoundary}" y1="${y2}" x2="${xBoundary}" y2="${y3}" stroke="#888888" stroke-dasharray="4,4" stroke-width="1.5" />`;
-
+			
 				// Móc ngoặc tổng ? ở bên phải
 				const braceX = maxX + 12;
 				const midY = (y1 + y3) / 2;
 				const bracePath = `M ${braceX} ${y1} C ${braceX + 10} ${y1}, ${braceX + 10} ${midY - 4}, ${braceX + 14} ${midY} C ${braceX + 10} ${midY + 4}, ${braceX + 10} ${y3}, ${braceX} ${y3}`;
-
+			
 				// Móc nét đứt hiển thị giá trị
 				const arc1Path = `M ${xStart} ${y1 - 6} Q ${xStart + uW / 2} ${y1 - 18} ${xEnd1} ${y1 - 6}`;
 				const diffStartX = isMore ? xEnd2 : xEnd3;
 				const diffEndX = isMore ? xEnd3 : xEnd2;
 				const arcDiffPath = `M ${diffStartX} ${y3 + 6} Q ${diffStartX + diffW / 2} ${y3 + 18} ${diffEndX} ${y3 + 6}`;
-
+			
+				// TỐI ƯU CẤU TRÚC HIỂN THỊ RESPONSIVE VÀ BÙ LỆCH LỀ
 				const svgContent = `
-					<div class="flex justify-center my-3">
-						<svg width="450" height="175" viewBox="0 0 450 175" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="13">
-							<!-- Tên đối tượng -->
-							<text x="${xStart - 10}" y="${y1 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item1}:</text>
-							<text x="${xStart - 10}" y="${y2 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item2}:</text>
-							<text x="${xStart - 10}" y="${y3 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item3}:</text>
-
-							<!-- Đường vạch đứt -->
-							${svgLines}
-
-							<!-- Đoạn thẳng chính -->
-							<line x1="${xStart}" y1="${y1}" x2="${xEnd1}" y2="${y1}" stroke="#000000" stroke-width="2" />
-							<line x1="${xStart}" y1="${y2}" x2="${xEnd2}" y2="${y2}" stroke="#000000" stroke-width="2" />
-							<line x1="${xStart}" y1="${y3}" x2="${xEnd3}" y2="${y3}" stroke="#000000" stroke-width="2" />
-
-							<!-- Vạch mút đầu -->
-							<line x1="${xStart}" y1="${y1 - 5}" x2="${xStart}" y2="${y3 + 5}" stroke="#000000" stroke-width="1.5" />
-
-							<!-- Móc nét đứt hiển thị giá trị đoạn 1 -->
-							<path d="${arc1Path}" fill="none" stroke="#64748b" stroke-dasharray="2,2" stroke-width="1.2" />
-							<text x="${xStart + uW / 2}" y="${y1 - 18}" text-anchor="middle" font-weight="bold" fill="#0f172a">${fmt(n1)} ${ctx.unit}</text>
-
-							<!-- Móc nét đứt hiển thị giá trị đoạn chênh lệch -->
-							<path d="${arcDiffPath}" fill="none" stroke="#64748b" stroke-dasharray="2,2" stroke-width="1.2" />
-							<text x="${diffStartX + diffW / 2}" y="${y3 + 31}" text-anchor="middle" font-weight="bold" fill="#0f172a">${fmt(diff)} ${ctx.unit}</text>
-
-							<!-- Móc tổng bên phải -->
-							<path d="${bracePath}" fill="none" stroke="#1e293b" stroke-width="1.8" />
-							<text x="${braceX + 22}" y="${midY + 4}" text-anchor="start" font-weight="bold" fill="#d97706">? ${ctx.unit}</text>
-						</svg>
+					<div style="margin-left: -48px; width: calc(100% + 48px); text-align: center; margin-top: 12px; margin-bottom: 12px; clear: both; box-sizing: border-box;">
+						<div style="display: inline-block; width: 100%; max-width: 450px; padding: 4px; box-sizing: border-box;">
+							<svg viewBox="0 0 450 175" style="width: 100%; height: auto; display: block; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="13">
+								<!-- Tên đối tượng -->
+								<text x="${xStart - 10}" y="${y1 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item1}:</text>
+								<text x="${xStart - 10}" y="${y2 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item2}:</text>
+								<text x="${xStart - 10}" y="${y3 + 4}" text-anchor="end" font-weight="bold" fill="#1e293b">${ctx.item3}:</text>
+			
+								<!-- Đường vạch đứt -->
+								${svgLines}
+			
+								<!-- Đoạn thẳng chính -->
+								<line x1="${xStart}" y1="${y1}" x2="${xEnd1}" y2="${y1}" stroke="#000000" stroke-width="2" />
+								<line x1="${xStart}" y1="${y2}" x2="${xEnd2}" y2="${y2}" stroke="#000000" stroke-width="2" />
+								<line x1="${xStart}" y1="${y3}" x2="${xEnd3}" y2="${y3}" stroke="#000000" stroke-width="2" />
+			
+								<!-- Vạch mút đầu -->
+								<line x1="${xStart}" y1="${y1 - 5}" x2="${xStart}" y2="${y3 + 5}" stroke="#000000" stroke-width="1.5" />
+			
+								<!-- Móc nét đứt hiển thị giá trị đoạn 1 -->
+								<path d="${arc1Path}" fill="none" stroke="#64748b" stroke-dasharray="2,2" stroke-width="1.2" />
+								<text x="${xStart + uW / 2}" y="${y1 - 18}" text-anchor="middle" font-weight="bold" fill="#0f172a">${fmt(n1)} ${ctx.unit}</text>
+			
+								<!-- Móc nét đứt hiển thị giá trị đoạn chênh lệch -->
+								<path d="${arcDiffPath}" fill="none" stroke="#64748b" stroke-dasharray="2,2" stroke-width="1.2" />
+								<text x="${diffStartX + diffW / 2}" y="${y3 + 31}" text-anchor="middle" font-weight="bold" fill="#0f172a">${fmt(diff)} ${ctx.unit}</text>
+			
+								<!-- Móc tổng bên phải -->
+								<path d="${bracePath}" fill="none" stroke="#1e293b" stroke-width="1.8" />
+								<text x="${braceX + 22}" y="${midY + 4}" text-anchor="start" font-weight="bold" fill="#d97706">? ${ctx.unit}</text>
+							</svg>
+						</div>
 					</div>
 				`;
-
+			
 				// 4. ĐÁP ÁN NHIỄU
 				const correctAnsStr = `${fmt(total)} ${ctx.unit}`;
-
+			
 				const wrongOptions = [
 					`${fmt(n2 + n3)} ${ctx.unit}`,
 					`${fmt(n1 + n2 + (isMore ? n2 - diff : n2 + diff))} ${ctx.unit}`,
 					`${fmt(n1 + (n1 + k) + n3)} ${ctx.unit}`,
 					`${fmt(total - 10)} ${ctx.unit}`
 				].filter(ans => ans !== correctAnsStr);
-
+			
 				for (let i = wrongOptions.length - 1; i > 0; i--) {
 					const j = Math.floor(Math.random() * (i + 1));
 					[wrongOptions[i], wrongOptions[j]] = [wrongOptions[j], wrongOptions[i]];
 				}
-
+			
 				// 5. NỘI DUNG CÂU HỎI VÀ LỜI GIẢI
 				const questionText = `<div>` +
 					`<p>Đặt đề toán theo tóm tắt sau rồi giải:</p>` +
 					`${svgContent}` +
 					`</div>`;
-
+			
 				const explainHtml = `<p class="font-bold text-blue-700">Bài giải:</p>` +
 					`<p><b>Đề toán:</b> Trong ${ctx.container} có $${fmt(n1)}$ ${ctx.unit} ${ctx.item1.toLowerCase()}. Số ${ctx.unit} ${ctx.item2.toLowerCase()} ${kText} số ${ctx.unit} ${ctx.item1.toLowerCase()}. Số ${ctx.unit} ${ctx.item3.toLowerCase()} ${diffText} số ${ctx.unit} ${ctx.item2.toLowerCase()} là $${fmt(diff)}$ ${ctx.unit}. Hỏi trong ${ctx.loc} có tất cả bao nhiêu ${ctx.unit} ${ctx.item1.toLowerCase()}, ${ctx.item2.toLowerCase()} và ${ctx.item3.toLowerCase()}?</p>` +
 					`<p>Số ${ctx.unit} ${ctx.item2.toLowerCase()} là:<br>&emsp;$${fmt(n1)} \\times ${k} = ${fmt(n2)}$ (${ctx.unit})</p>` +
 					`<p>Số ${ctx.unit} ${ctx.item3.toLowerCase()} là:<br>&emsp;$${fmt(n2)} ${diffOp} ${fmt(diff)} = ${fmt(n3)}$ (${ctx.unit})</p>` +
 					`<p>Số ${ctx.unit} ${ctx.item1.toLowerCase()}, ${ctx.item2.toLowerCase()} và ${ctx.item3.toLowerCase()} có tất cả là:<br>&emsp;$${fmt(n1)} + ${fmt(n2)} + ${fmt(n3)} = ${fmt(total)}$ (${ctx.unit})</p>` +
 					`<p><b>Đáp số:</b> $${fmt(total)}$ ${ctx.unit}.</p>`;
-
+			
 				return makeQ(
 					questionText,
 					correctAnsStr,
@@ -5342,7 +5345,7 @@ let scratchCtx = null;
 					],
 					explainHtml
 				);
-			},
+			}
 			],
             g4_units_avg: [
                 () => {
