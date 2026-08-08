@@ -7047,7 +7047,7 @@ let scratchCtx = null;
 					// 2. HÀM VẼ SVG HÌNH TRÒN HIỂN THỊ ĐƯỜNG KÍNH
 					const generateCircleSVG = (d, unit = 'cm') => {
 						return `
-							<svg width="150" height="150" viewBox="0 0 150 150" class="drop-shadow-sm">
+							<svg width="150" height="150" viewBox="0 0 150 150" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
 								<circle cx="75" cy="75" r="50" fill="#fdf2f8" stroke="#db2777" stroke-width="3" />
 								<circle cx="75" cy="75" r="3" fill="#db2777" />
 								<line x1="25" y1="75" x2="125" y2="75" stroke="#db2777" stroke-width="2" stroke-dasharray="3" />
@@ -7189,7 +7189,7 @@ let scratchCtx = null;
 					// 2. HÀM VẼ SVG HÌNH TRÒN CÓ BÁN KÍNH VÀ ĐƠN VỊ LINH HOẠT
 					const generateCircleSVG = (r, unit = 'cm') => {
 						return `
-							<svg width="150" height="150" viewBox="0 0 150 150" class="drop-shadow-sm">
+							<svg width="150" height="150" viewBox="0 0 150 150" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
 								<circle cx="75" cy="75" r="50" fill="#fdf2f8" stroke="#db2777" stroke-width="3" />
 								<circle cx="75" cy="75" r="3" fill="#db2777" />
 								<line x1="75" y1="75" x2="125" y2="75" stroke="#db2777" stroke-width="2" stroke-dasharray="3" />
@@ -7350,7 +7350,7 @@ let scratchCtx = null;
 						}
 
 						return `
-							<svg width="180" height="180" viewBox="0 0 180 180" class="drop-shadow-sm">
+							<svg width="180" height="180" viewBox="0 0 180 180" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
 								<!-- Vòng tròn ngoài (Thành giếng) -->
 								<circle cx="90" cy="90" r="70" fill="#e2e8f0" stroke="#475569" stroke-width="2" />
 								${bricks}
@@ -7559,8 +7559,8 @@ let scratchCtx = null;
 
 						if (type === 'right') {
 							return `
-				<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm">
-					<polygon points="50,25 50,100 200,100" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" />
+				<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
+					<polygon points="50,25 50,100 200,100" fill="#cdfaf8" stroke="#2563eb" stroke-width="2.5" />
 					<path d="M 50 88 L 62 88 L 62 100" fill="none" stroke="#dc2626" stroke-width="1.5" />
 					<text x="50" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text>
 					<text x="35" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text>
@@ -7572,8 +7572,8 @@ let scratchCtx = null;
 
 						if (type === 'obtuse') {
 							return `
-				<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm">
-					<polygon points="30,25 80,100 220,100" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" />
+				<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
+					<polygon points="30,25 80,100 220,100" fill="#cdfaf8" stroke="#2563eb" stroke-width="2.5" />
 					<line x1="30" y1="25" x2="30" y2="100" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,4" />
 					<line x1="30" y1="100" x2="80" y2="100" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3" />
 					<path d="M 30 90 L 40 90 L 40 100" fill="none" stroke="#dc2626" stroke-width="1.5" />
@@ -7587,8 +7587,8 @@ let scratchCtx = null;
 						}
 
 						return `
-				<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm">
-					<polygon points="120,25 30,100 210,100" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" />
+				<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
+					<polygon points="120,25 30,100 210,100" fill="#cdfaf8" stroke="#2563eb" stroke-width="2.5" />
 					<line x1="120" y1="25" x2="120" y2="100" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,4" />
 					<path d="M 108 100 L 108 88 L 120 88" fill="none" stroke="#dc2626" stroke-width="1.5" />
 					<text x="120" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text>
@@ -7698,12 +7698,12 @@ let scratchCtx = null;
 						const labelA = `Đáy a = ${aStr}`;
 						const labelH = `h = ${hStr}`;
 						if (type === 'right') {
-							return `<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm"><polygon points="50,25 50,100 200,100" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" /><path d="M 50 88 L 62 88 L 62 100" fill="none" stroke="#dc2626" stroke-width="1.5" /><text x="50" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text><text x="35" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text><text x="212" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">C</text><text x="38" y="65" text-anchor="end" font-size="11" font-weight="bold" fill="#dc2626">${labelH}</text><text x="125" y="122" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">${labelA}</text></svg>`.trim();
+							return `<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100"><polygon points="50,25 50,100 200,100" fill="#cdfaf8" stroke="#2563eb" stroke-width="2.5" /><path d="M 50 88 L 62 88 L 62 100" fill="none" stroke="#dc2626" stroke-width="1.5" /><text x="50" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text><text x="35" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text><text x="212" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">C</text><text x="38" y="65" text-anchor="end" font-size="11" font-weight="bold" fill="#dc2626">${labelH}</text><text x="125" y="122" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">${labelA}</text></svg>`.trim();
 						}
 						if (type === 'obtuse') {
-							return `<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm"><polygon points="30,25 80,100 220,100" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" /><line x1="30" y1="25" x2="30" y2="100" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,4" /><line x1="30" y1="100" x2="80" y2="100" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3" /><path d="M 30 90 L 40 90 L 40 100" fill="none" stroke="#dc2626" stroke-width="1.5" /><text x="30" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text><text x="80" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text><text x="230" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">C</text><text x="30" y="115" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">H</text><text x="22" y="65" text-anchor="end" font-size="11" font-weight="bold" fill="#dc2626">${labelH}</text><text x="150" y="120" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">${labelA}</text></svg>`.trim();
+							return `<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100"><polygon points="30,25 80,100 220,100" fill="#cdfaf8" stroke="#2563eb" stroke-width="2.5" /><line x1="30" y1="25" x2="30" y2="100" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,4" /><line x1="30" y1="100" x2="80" y2="100" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3" /><path d="M 30 90 L 40 90 L 40 100" fill="none" stroke="#dc2626" stroke-width="1.5" /><text x="30" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text><text x="80" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text><text x="230" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">C</text><text x="30" y="115" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">H</text><text x="22" y="65" text-anchor="end" font-size="11" font-weight="bold" fill="#dc2626">${labelH}</text><text x="150" y="120" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">${labelA}</text></svg>`.trim();
 						}
-						return `<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm"><polygon points="120,25 30,100 210,100" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" /><line x1="120" y1="25" x2="120" y2="100" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,4" /><path d="M 108 100 L 108 88 L 120 88" fill="none" stroke="#dc2626" stroke-width="1.5" /><text x="120" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text><text x="18" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text><text x="222" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">C</text><text x="120" y="115" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">H</text><text x="114" y="65" text-anchor="end" font-size="11" font-weight="bold" fill="#dc2626">${labelH}</text><text x="120" y="130" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">${labelA}</text></svg>`.trim();
+						return `<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100"><polygon points="120,25 30,100 210,100" fill="#cdfaf8" stroke="#2563eb" stroke-width="2.5" /><line x1="120" y1="25" x2="120" y2="100" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,4" /><path d="M 108 100 L 108 88 L 120 88" fill="none" stroke="#dc2626" stroke-width="1.5" /><text x="120" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">A</text><text x="18" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">B</text><text x="222" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">C</text><text x="120" y="115" text-anchor="middle" font-size="11" font-weight="bold" fill="#dc2626">H</text><text x="114" y="65" text-anchor="end" font-size="11" font-weight="bold" fill="#dc2626">${labelH}</text><text x="120" y="130" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">${labelA}</text></svg>`.trim();
 					};
 
 					// 2. Sinh số thập phân linh hoạt
@@ -7778,9 +7778,9 @@ let scratchCtx = null;
 							const angleMarker = getRightAnglePath(Ix, Iy, Tx, Ty, Sx, Sy, 8);
 
 							return `
-				<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm">
+				<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
 					<!-- Tam giác STU -->
-					<polygon points="${Sx},${Sy} ${Tx},${Ty} ${Ux},${Uy}" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+					<polygon points="${Sx},${Sy} ${Tx},${Ty} ${Ux},${Uy}" fill="#cdfaf8" stroke="#2563eb" stroke-width="2" />
 					<!-- Đường cao TI -->
 					<line x1="${Tx}" y1="${Ty}" x2="${Ix}" y2="${Iy}" stroke="#dc2626" stroke-width="2" />
 					<!-- Ký hiệu góc vuông tại I -->
@@ -7803,8 +7803,8 @@ let scratchCtx = null;
 							const angleMarker = getRightAnglePath(Hx, Hy, Ax, Ay, Bx, By, 8);
 
 							return `
-				<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm">
-					<polygon points="${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+				<svg width="340" height="135" viewBox="0 0 240 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
+					<polygon points="${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}" fill="#cdfaf8" stroke="#2563eb" stroke-width="2" />
 					<line x1="${Ax}" y1="${Ay}" x2="${Hx}" y2="${Hy}" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,4" />
 					${angleMarker}
 					<text x="${Ax}" y="${Ay - 5}" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">${labels.V1}</text>
@@ -7824,8 +7824,8 @@ let scratchCtx = null;
 							const angleMarker = getRightAnglePath(Hx, Hy, Dx, Dy, Ex, Ey, 8);
 
 							return `
-				<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm">
-					<polygon points="${Dx},${Dy} ${Ex},${Ey} ${Gx},${Gy}" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+				<svg width="350" height="135" viewBox="0 0 250 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
+					<polygon points="${Dx},${Dy} ${Ex},${Ey} ${Gx},${Gy}" fill="#cdfaf8" stroke="#2563eb" stroke-width="2" />
 					<line x1="${Dx}" y1="${Dy}" x2="${Hx}" y2="${Hy}" stroke="#dc2626" stroke-width="2" />
 					<line x1="${Hx}" y1="${Hy}" x2="${Ex}" y2="${Ey}" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3" />
 					${angleMarker}
@@ -7844,8 +7844,8 @@ let scratchCtx = null;
 						const angleMarker = getRightAnglePath(Px, Py, Mx, My, Nx, Ny, 8);
 
 						return `
-				<svg width="240" height="135" viewBox="0 0 240 135" class="drop-shadow-sm">
-					<polygon points="${Mx},${My} ${Nx},${Ny} ${Px},${Py}" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+				<svg width="240" height="135" viewBox="0 0 240 135" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
+					<polygon points="${Mx},${My} ${Nx},${Ny} ${Px},${Py}" fill="#cdfaf8" stroke="#2563eb" stroke-width="2" />
 					<line x1="${Mx}" y1="${My}" x2="${Px}" y2="${Py}" stroke="#dc2626" stroke-width="2.5" />
 					${angleMarker}
 					<text x="${Mx}" y="${My - 5}" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">${labels.V1}</text>
@@ -7959,7 +7959,7 @@ let scratchCtx = null;
 					// 2. HÀM VẼ HÌNH THANG SVG (Thêm tham số unit để tự đổi m hoặc cm)
 					const generateTrapezoidSVG = (a, b, h, unit = 'm') => {
 						return `
-							<svg width="220" height="120" viewBox="0 0 220 120" class="drop-shadow-sm">
+							<svg width="220" height="120" viewBox="0 0 220 120" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
 								<polygon points="50,25 170,25 200,95 20,95" fill="#fff7ed" stroke="#ea580c" stroke-width="3" />
 								<line x1="50" y1="25" x2="50" y2="95" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="4" />
 								<text x="110" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#c2410c">Đáy bé b = ${b} ${unit}</text>
