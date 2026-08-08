@@ -121,9 +121,12 @@
         <div class="max-w-5xl mx-auto px-4 py-2.5 flex justify-between items-center">
             <!-- Brand Logo -->
             <div class="flex items-center gap-3 cursor-pointer" onclick="goToHome()">
-                <div class="bg-amber-400 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xl shadow-md transform hover:rotate-6 transition-transform">
-                    <i class="fa-solid fa-calculator"></i>
-                </div>
+				<div class="bg-amber-400 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xl shadow-md transform hover:rotate-6 transition-transform overflow-hidden">
+				    <img src="https://github.com/user-attachments/assets/a829e9a7-296c-4566-84e0-d75f23da5ccc" 
+				         alt="Logo" 
+				         onerror="this.replaceWith(Object.assign(document.createElement('i'), {className: 'fa-solid fa-calculator'}))" 
+				         class="w-full h-full object-cover rounded-2xl">
+				</div>
                 <div>
                     <h1 class="font-extrabold text-lg sm:text-xl text-blue-600 leading-tight flex items-center gap-1.5">
                         Timmy Math <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-black border border-blue-200">PRO</span>
