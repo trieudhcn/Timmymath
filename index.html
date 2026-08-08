@@ -980,7 +980,7 @@ let scratchCtx = null;
 				degreeTextSVG = `<text x="${textX.toFixed(1)}" y="${textY.toFixed(1)}" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">${angleDeg}°</text>`;
 			}
 
-			return `<div class="flex justify-center my-3"><svg width="300" height="155" viewBox="0 0 300 155" class="border border-gray-200 rounded-lg bg-white shadow-sm">${protractorSVG}<line x1="${cx}" y1="${cy}" x2="${xA}" y2="${yA}" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${xB.toFixed(1)}" y2="${yB.toFixed(1)}" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="4" fill="#2563eb"/>${arcSVG}${degreeTextSVG}<text x="${cx - 12}" y="${cy + 18}" font-size="13" font-weight="bold" fill="#1e293b">O</text><text x="${xA + 8}" y="${yA + 4}" font-size="13" font-weight="bold" fill="#1e293b">A</text><text x="${xBLabel.toFixed(1)}" y="${yBLabel.toFixed(1)}" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">B</text></svg></div>`;
+			return `<div class="flex justify-center my-3"><svg width="300" height="155" viewBox="0 0 300 155" class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm">${protractorSVG}<line x1="${cx}" y1="${cy}" x2="${xA}" y2="${yA}" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${xB.toFixed(1)}" y2="${yB.toFixed(1)}" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="4" fill="#2563eb"/>${arcSVG}${degreeTextSVG}<text x="${cx - 12}" y="${cy + 18}" font-size="13" font-weight="bold" fill="#1e293b">O</text><text x="${xA + 8}" y="${yA + 4}" font-size="13" font-weight="bold" fill="#1e293b">A</text><text x="${xBLabel.toFixed(1)}" y="${yBLabel.toFixed(1)}" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">B</text></svg></div>`;
 		}
 		//vẽ tam giác
 		
@@ -5668,7 +5668,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<polygon points="100,35 260,35 200,155 100,155" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="83" y="35" fill="#0f172a">${L[0]}</text>
 									<text x="268" y="35" fill="#0f172a">${L[1]}</text>
@@ -5690,7 +5690,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<rect x="90" y="35" width="160" height="120" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="73" y="35" fill="#0f172a">${L[0]}</text>
 									<text x="258" y="35" fill="#0f172a">${L[1]}</text>
@@ -5711,7 +5711,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<polygon points="80,95 130,40 250,40 250,150 130,150" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="63" y="100" fill="#0f172a">${L[0]}</text>
 									<text x="127" y="28" fill="#0f172a">${L[1]}</text>
@@ -5734,7 +5734,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<!-- Hình thoi -->
 									<polygon points="170,25 270,95 170,165 70,95" fill="none" stroke="#1e293b" stroke-width="2" />
 									<!-- Hai đường chéo -->
@@ -5819,7 +5819,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<rect x="80" y="40" width="170" height="110" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="63" y="40" fill="#0f172a">${L[0]}</text>
 									<text x="258" y="40" fill="#0f172a">${L[1]}</text>
@@ -5839,7 +5839,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<polygon points="110,40 260,40 210,145 60,145" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="93" y="40" fill="#0f172a">${L[0]}</text>
 									<text x="268" y="40" fill="#0f172a">${L[1]}</text>
@@ -5858,7 +5858,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<polygon points="110,40 210,40 270,145 50,145" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="93" y="40" fill="#0f172a">${L[0]}</text>
 									<text x="218" y="40" fill="#0f172a">${L[1]}</text>
@@ -5878,7 +5878,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<polygon points="170,25 260,95 170,165 80,95" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="166" y="16" fill="#0f172a">${L[0]}</text>
 									<text x="268" y="99" fill="#0f172a">${L[1]}</text>
@@ -5895,7 +5895,7 @@ let scratchCtx = null;
 
 						svgContent = `
 							<div class="flex justify-center my-3">
-								<svg class="border border-gray-200 rounded-lg bg-white shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+								<svg class="border border-gray-200 rounded-lg bg-slate-100 shadow-sm" width="340" height="190" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
 									<polygon points="90,40 240,60 210,150 70,120" fill="none" stroke="#1e293b" stroke-width="2" />
 									<text x="73" y="40" fill="#0f172a">${L[0]}</text>
 									<text x="248" y="60" fill="#0f172a">${L[1]}</text>
