@@ -873,7 +873,7 @@ let scratchCtx = null;
 
         function generateCircleSVG(r) {
             return `
-                <svg width="140" height="140" viewBox="0 0 140 140" class="drop-shadow-sm">
+                <svg width="140" height="140" viewBox="0 0 140 140" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
                     <circle cx="70" cy="70" r="50" fill="#fdf2f8" stroke="#db2777" stroke-width="3" />
                     <circle cx="70" cy="70" r="3" fill="#db2777" />
                     <line x1="70" y1="70" x2="120" y2="70" stroke="#db2777" stroke-width="2" stroke-dasharray="3" />
@@ -7467,7 +7467,7 @@ let scratchCtx = null;
 						const textX = isDiameter ? "75" : "100";
 
 						return `
-							<svg width="150" height="150" viewBox="0 0 150 150" class="drop-shadow-sm">
+							<svg width="150" height="150" viewBox="0 0 150 150" class="drop-shadow-sm border border-gray-200 rounded-lg bg-slate-100">
 								<circle cx="75" cy="75" r="50" fill="#fdf2f8" stroke="#db2777" stroke-width="3" />
 								<circle cx="75" cy="75" r="3" fill="#db2777" />
 								${lineHtml}
