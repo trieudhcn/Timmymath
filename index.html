@@ -463,8 +463,8 @@
         let currentQuestionIndex = 0;
         let userScore = 0;
         let userStreak = 1;
-        
         let totalStars = 0;
+		// 1. Tải dữ liệu ban đầu từ LocalStorage
         try {
             totalStars = parseInt(localStorage.getItem('math_quiz_stars') || '0');
             if (isNaN(totalStars)) totalStars = 0;
@@ -658,7 +658,39 @@ let scratchCtx = null;
                 if (badgeNext) badgeNext.innerText = `Cần ${1000 - totalStars} ⭐ nữa để lên cấp Học Sĩ`;
             }
         }
-
+		// 2. Hàm kiểm tra và tăng Streak (Gọi hàm này khi người dùng HOÀN THÀNH 1 bài tập)
+		function recordDailyActivity() {
+		    const todayStr = new Date().toDateString(); // Chuỗi dạng "Sat Aug 08 2026"
+		    const lastDateStr = localStorage.getItem('math_quiz_last_date');
+		
+		    if (!lastDateStr) {
+		        // Lần đầu tiên học
+		        userStreak = 1;
+		        localStorage.setItem('math_quiz_last_date', todayStr);
+		    } else if (lastDateStr !== todayStr) {
+		        const lastDate = new Date(lastDateStr);
+		        const today = new Date(todayStr);
+		        
+		        // Tính khoảng cách giữa 2 lần học (theo ngày)
+		        const diffTime = Math.abs(today - lastDate);
+		        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+		
+		        if (diffDays === 1) {
+		            // Học liên tiếp sang ngày hôm sau -> Tăng 1 ngày
+		            userStreak += 1;
+		        } else if (diffDays > 1) {
+		            // Bỏ lỡ từ 2 ngày trở lên -> Reset về 1
+		            userStreak = 1;
+		        }
+		        
+		        // Cập nhật ngày học mới nhất
+		        localStorage.setItem('math_quiz_last_date', todayStr);
+		    }
+		    // Nếu lastDateStr === todayStr (đã học trong hôm nay rồi) -> Giữ nguyên userStreak
+		
+		    // Cập nhật giao diện và lưu streak mới
+		    updateStarsDisplay();
+		}
         function updateStarsDisplay() {
             const el = document.getElementById('user-stars');
             if (el) el.innerText = `${totalStars} Sao`;
@@ -669,7 +701,7 @@ let scratchCtx = null;
                 localStorage.setItem('math_quiz_stars', totalStars.toString());
                 localStorage.setItem('math_quiz_streak', userStreak.toString());
             } catch (e) {}
-            
+            if (typeof updateBadges === 'function') updateBadges();
             updateBadges();
         }
 
